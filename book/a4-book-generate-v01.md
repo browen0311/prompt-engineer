@@ -190,8 +190,8 @@
 ```javascript
 // 定義字型檔案來源 (例如：raw.githubusercontent.com 或其他可靠 CDN)
 const FONT_FILES = {
-  'NotoSansTC-Regular.ttf': 'https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/OTF/TraditionalChinese/NotoSansCJKhk-Regular.otf', // 或是 .ttf 直接連結
-  'NotoSansTC-Bold.ttf': 'https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/OTF/TraditionalChinese/NotoSansCJKhk-Bold.otf',    // 或是 .ttf 直接連結
+  'NotoSansTC-Regular.ttf': 'https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Regular.otf', // 或是 .ttf 直接連結
+  'NotoSansTC-Bold.ttf': 'https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Bold.otf',    // 或是 .ttf 直接連結
   // 可選：英數等寬字型
   // 'FiraCode-Regular.ttf': 'https://raw.githubusercontent.com/.../FiraCode-Regular.ttf'
 };
