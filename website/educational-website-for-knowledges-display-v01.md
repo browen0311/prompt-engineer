@@ -196,7 +196,7 @@
   * 術語的解釋 (<dd>) 應清晰、簡潔。  
   * 按字母順序或主題順序排列術語。  
   * 範例：  
-  ```html
+  ```xml
     <section id="glossary" class="py-8 md:py-12 bg-background-light dark:bg-background-dark-soft rounded-lg shadow-md">  
       <div class="container mx-auto px-4">  
         <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-primary dark:text-primary-dark">關鍵術語詞彙表</h2>  
@@ -212,7 +212,7 @@
           </dl>  
       </div>  
     </section>
-    ```
+  ```
 
 ### **6. 補充資源與延伸閱讀 (Supplementary Resources & Further Reading)**
 
