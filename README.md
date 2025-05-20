@@ -20,6 +20,10 @@
 ### 書籍
 - **[A4 書籍生成提示詞 - 版本 1](book/a4-book-generate-v01.md)**：用於生成 A4 尺寸的書籍內容，適合用於教育或專業出版物。
 
+### 深度研究
+- **[深度研究提示詞生成器 - 繁體中文版 v01](deep_research/deep_research_prompt_generator_zhTW-v01.md)**：用於生成深度研究的提示詞，針對繁體中文使用者。
+- **[深度研究提示詞生成器 - 英文版 v01](deep_research/deep_research_prompt_generator_en-v01.md)**：用於生成深度研究的提示詞，針對英文使用者。
+
 ### 網站
 
 #### 行銷網站
