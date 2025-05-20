@@ -24,6 +24,9 @@
 - **[深度研究提示詞生成器 - 繁體中文版 v01](deep_research/deep_research_prompt_generator_zhTW-v01.md)**：用於生成深度研究的提示詞，針對繁體中文使用者。
 - **[深度研究提示詞生成器 - 英文版 v01](deep_research/deep_research_prompt_generator_en-v01.md)**：用於生成深度研究的提示詞，針對英文使用者。
 
+### 程式碼開發
+- **[Reflex 應用程式與 Beanie 和 Google OAuth 結構規則 - 版本 1](vibe_coding/reflex_app_and_beanie_and_google_oauth_structure_rules-v01.md)**：用於生成 Reflex 應用程式的結構，包含 Beanie 資料庫整合和 Google OAuth 認證功能。
+
 ### 網站
 
 #### 行銷網站
