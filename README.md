@@ -39,6 +39,9 @@
 - **[教育招生網站提示詞 - 版本 3a](website/educational-student-recruit-website-v3a.md)**：用於生成教育機構的招生網站內容，針對特定目標群體的設計。
 - **[教育招生網站提示詞 - 版本 3b](website/educational-student-recruit-website-v3b.md)**：用於生成教育機構的招生網站內容，另一種針對特定目標群體的設計。
 
+#### 教育知識展示網站
+- **[教育知識展示網站提示詞 - 版本 1](website/educational-website-for-knowledges-display-v01.md)**：用於生成教育知識展示網站的內容，專注於知識分享和學習資源的呈現。
+
 ## 如何使用
 您可以直接點擊上述連結查看各提示詞的詳細設計規格和使用說明，根據需求複製或調整提示詞內容，應用於您的創作工具或生成平台。
 
