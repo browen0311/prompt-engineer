@@ -47,4 +47,4 @@
 
 ## 參考資料
 - 圖像紀錄風格投影片：參考自 [Pikalai](https://hackmd.io/@pikalai/rymtrelTJe)
-- 資訊圖表縮圖：參考自 @Sunwood-ai-labs
+- 資訊圖表縮圖：參考自 [@Sunwood-ai-labs](https://github.com/Sunwood-ai-labs/MysticLibrary)
