@@ -1,6 +1,17 @@
 # {{project-name}} AI 輔助程式設計規範
 
+## 專案說明
+
+### 專案整體性描述
 {{project-description}}
+
+### 專案需求與規格
+
+#### 需求
+{{project-requirement-description}}
+
+#### 規格
+{{project-structure-description}}
 
 ## 程式設計實務 (CODING_PRACTICES)
 
