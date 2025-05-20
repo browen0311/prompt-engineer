@@ -67,69 +67,89 @@
 * **應用程式狀態整合 (`AuthState`):**
     * 建議創建一個繼承自 `reflex_google_auth.GoogleAuthState` 的基礎應用程式狀態類 (例如 `AuthState`)。
         ```python
-        # 在 state.py 或 auth_state.py
+        # 在 your_app/state.py 或 your_app/auth_state.py
         import reflex as rx
         from reflex_google_auth import GoogleAuthState
         from typing import List, Dict, Any
+        
+        # 假設 User 模型和 UserGroup Enum 已在 your_app.models 中定義
+        # from your_app.models import User, UserGroup 
+
+        # 為了範例清晰，UserGroup Enum 直接在此定義，實際專案應放在 models.py 或 enums.py
         from enum import Enum
-        # 假設 User 模型和 UserGroup Enum 已定義 (見下文)
-        # from .models import User, UserGroup
+        class UserGroup(str, Enum):
+            ADMIN = "系統管理員"
+            EDITOR = "編輯者"
+            VIEWER = "檢視者"
+            AUTHENTICATED_USER = "已驗證使用者"
 
         class AuthState(GoogleAuthState):
-            # 可在此處擴展，例如儲存應用程式特定的使用者資訊或群組
-            # _current_user_app_groups: List[UserGroup] = [] # 範例
+            # 使用 rx.Var 來儲存從資料庫同步的應用程式特定使用者群組，以實現反應式更新
+            _app_user_groups_var: rx.Var[List[UserGroup]] = rx.Var([])
 
-            @rx.event
+            @rx.event(transition=rx.Transition.PENDING) # 表示此事件處理期間可能處於等待狀態
             async def on_success(self, id_token: Dict[str, Any]):
                 """
                 在 Google 登入成功後觸發。
+                處理 token 驗證、使用者資料庫同步及群組更新。
                 """
-                await super().on_success(id_token) # 呼叫父類別的 on_success 處理 token
-                if self.token_is_valid:
-                    # 首次登入處理：檢查使用者是否存在於應用程式資料庫，
-                    # 若不存在則創建，並可賦予預設群組。
-                    user_email = self.tokeninfo.get("email")
-                    google_sub = self.tokeninfo.get("sub")
-                    user_name = self.tokeninfo.get("name")
-
-                    # --- 實際的資料庫操作 ---
-                    # 例: existing_user = await User.find_one(User.google_sub == google_sub)
-                    # if not existing_user:
-                    #     new_user = User(
-                    #         email=user_email,
-                    #         fullname=user_name,
-                    #         google_sub=google_sub,
-                    #         groups=[UserGroup.VIEWER] # 預設群組
-                    #     )
-                    #     await new_user.insert()
-                    #     self._current_user_app_groups = new_user.groups
-                    # else:
-                    #     self._current_user_app_groups = existing_user.groups
-                    # --- 範例結束 ---
-                    print(f"使用者 {user_name} ({user_email}) 登入成功。") # 應使用日誌系統
-                else:
-                    # self._current_user_app_groups = []
-                    pass
+                async with self: # 確保狀態更新的原子性與批次處理
+                    await super().on_success(id_token) # 呼叫父類別的 on_success 處理 tokeninfo
+                    
+                    if self.token_is_valid:
+                        user_email = self.tokeninfo.get("email")
+                        google_sub = self.tokeninfo.get("sub") # Google User ID
+                        user_name = self.tokeninfo.get("name")
+                        
+                        # --- 實際的資料庫操作 (應替換為真實的 Beanie 操作) ---
+                        if google_sub:
+                            # from your_app.models import User # 應在檔案頂部匯入
+                            # existing_user = await User.find_one(User.google_sub == google_sub)
+                            # simulated_groups_from_db = []
+                            # if existing_user:
+                            #     simulated_groups_from_db = existing_user.groups
+                            #     # 可選擇更新使用者資訊，例如 fullname 或 last_login
+                            #     # await existing_user.update(Set({User.fullname: user_name, User.last_login: datetime.utcnow()}))
+                            #     print(f"使用者 {existing_user.fullname} (ID: {google_sub}) 已存在，群組: {simulated_groups_from_db}")
+                            # else:
+                            #     # 創建新使用者
+                            #     default_groups = [UserGroup.VIEWER, UserGroup.AUTHENTICATED_USER]
+                            #     new_user = User(
+                            #         email=user_email,
+                            #         fullname=user_name,
+                            #         google_sub=google_sub,
+                            #         groups=default_groups 
+                            #     )
+                            #     await new_user.insert()
+                            #     simulated_groups_from_db = new_user.groups
+                            #     print(f"新使用者 {user_name} (ID: {google_sub}) 已創建，群組: {simulated_groups_from_db}")
+                            # self._app_user_groups_var = simulated_groups_from_db # 更新 rx.Var
+                            
+                            # --- 範例：基於 email 模擬群組指派 (僅為演示，實際應查資料庫) ---
+                            if user_email and "admin" in user_email.lower():
+                                self._app_user_groups_var = [UserGroup.ADMIN, UserGroup.AUTHENTICATED_USER]
+                            elif user_email:
+                                self._app_user_groups_var = [UserGroup.VIEWER, UserGroup.AUTHENTICATED_USER]
+                            else:
+                                self._app_user_groups_var = []
+                            # --- 範例結束 ---
+                            
+                        else: # google_sub 不存在，理論上不應發生於成功登入
+                            self._app_user_groups_var = []
+                        
+                        print(f"使用者 {user_name} ({user_email}) 登入成功。應用程式群組已設定。") # 應使用日誌系統
+                    else:
+                        self._app_user_groups_var = [] # Token 無效，清除群組
 
             @rx.cached_var
-            def current_user_groups(self) -> List['UserGroup']: # 請將 UserGroup 替換為實際的 Enum
-                """
-                獲取當前登入使用者的應用程式內部群組。
-                此處為示意，實際應從資料庫或同步的 _current_user_app_groups 取得。
-                """
+            def current_user_groups(self) -> List[UserGroup]:
+                """獲取當前登入使用者的應用程式內部群組。"""
                 if not self.token_is_valid:
                     return []
-                # --- 模擬從資料庫獲取 ---
-                # user_email = self.tokeninfo.get("email")
-                # if user_email and "admin" in user_email:
-                #     return [UserGroup.ADMIN, UserGroup.AUTHENTICATED_USER]
-                # elif user_email:
-                #     return [UserGroup.VIEWER, UserGroup.AUTHENTICATED_USER]
-                # --- 範例結束 ---
-                return [] # 預設為空，應由 on_success 或其他邏輯填充
+                return self._app_user_groups_var
 
         # 應用程式的主 State 應繼承 AuthState
-        # class AppState(AuthState):
+        # class AppState(AuthState): # 假設這是您專案的主 State
         #     # ... 其他應用程式狀態 ...
         #     pass
         ```
@@ -138,30 +158,36 @@
     * 使用 `reflex_google_auth.require_google_login` 裝飾器來保護需要登入才能存取的頁面或組件。
     * 此裝飾器會在使用者未登入時自動顯示 Google 登入按鈕。
         ```python
-        # 在 pages.py 或 views.py
-        # from .state import AuthState # 假設 AuthState 是您應用的主 State 或其基類
+        # 在 your_app/pages/protected_page.py
+        # import reflex as rx
+        # from your_app.state import AuthState # 假設 AuthState 是您應用的主 State 或其基類
         # from reflex_google_auth import require_google_login
 
         # @rx.page(route="/protected_page")
         # @require_google_login
         # def protected_page() -> rx.Component:
         #     return rx.vstack(
-        #         rx.text(f"歡迎, {AuthState.user_name}!"),
-        #         rx.text("這是受保護的內容。")
+        #         rx.text(f"歡迎, {AuthState.user_name}!"), # user_name 來自 GoogleAuthState
+        #         rx.text("這是受保護的內容。"),
+        #         rx.text("您的群組："),
+        #         rx.foreach(
+        #             AuthState.current_user_groups, # 使用更新後的 current_user_groups
+        #             lambda group: rx.badge(group.value)
+        #         )
         #     )
         ```
 * **首次登入與使用者資料同步 (FIRST_LOGIN_USER_SYNC):**
     * 在 `AuthState` 的 `on_success` 事件處理器中，當使用者首次透過 Google 登入時，應檢查應用程式資料庫中是否已存在該使用者 (可使用 `tokeninfo['sub']` 作為唯一識別碼)。
-    * 若使用者不存在，應在資料庫中創建新的使用者記錄，儲存必要的 Google 使用者資訊 (如 `sub`, `email`, `name`, `picture`)，並可指派預設的使用者群組。
-    * 若使用者已存在，可更新其資訊 (如最後登入時間)。
+    * 若使用者不存在，應在資料庫中創建新的使用者記錄，儲存必要的 Google 使用者資訊 (如 `sub`, `email`, `name`, `picture`)，並可指派預設的使用者群組 (例如 `[UserGroup.VIEWER, UserGroup.AUTHENTICATED_USER]`)。
+    * 若使用者已存在，可更新其資訊 (如最後登入時間、姓名等) 並重新載入其群組資訊至 `_app_user_groups_var`。
     * `User` 模型 (例如在 MongoDB 中使用 Beanie) 應包含儲存 `google_sub` (唯一) 和 `groups` (群組列表) 的欄位。
 
 ##### 2. 角色型存取控制 (RBAC - ROLE_BASED_ACCESS_CONTROL)
 
 * **群組定義 (`UserGroup` Enum):**
-    * 使用 `enum.Enum` 定義應用程式中的所有使用者群組 (Roles)。
+    * 使用 `enum.Enum` 定義應用程式中的所有使用者群組 (Roles)。應將此 Enum 定義在可共享的模組中 (例如 `your_app/models.py` 或 `your_app/enums.py`)。
         ```python
-        # 在 enums.py 或 models.py
+        # 在 your_app/enums.py (或 your_app/models.py)
         from enum import Enum
 
         class UserGroup(str, Enum):
@@ -172,25 +198,7 @@
             # ... 可依需求新增其他群組
         ```
 * **使用者模型中的群組儲存 (USER_MODEL_GROUPS):**
-    * 在應用程式的 `User` 資料庫模型中，應有一個欄位 (例如 `groups: List[UserGroup]`) 來儲存該使用者所屬的所有群組。
-        ```python
-        # 承接 MongoDB 指南中的 User 模型範例
-        # from beanie import Document, Indexed
-        # from typing import List, Optional
-        # from pydantic import EmailStr
-        # from .enums import UserGroup # 假設 UserGroup 在 enums.py
-
-        # class User(Document):
-        #     fullname: Optional[str] = None
-        #     email: Indexed(EmailStr, unique=True)
-        #     google_sub: Indexed(str, unique=True, sparse=True) # Google User ID, sparse 允許非 Google 用戶
-        #     # hashed_password: Optional[str] = None # 若僅使用 Google 登入，此項可選
-        #     groups: List[UserGroup] = []
-        #     # ... 其他欄位
-
-        #     class Settings:
-        #         name = "users"
-        ```
+    * 在應用程式的 `User` 資料庫模型中，應有一個欄位 (例如 `groups: List[UserGroup]`) 來儲存該使用者所屬的所有群組。 (參考「資料庫」->「MongoDB」->「模型定義」中的 `User` 模型範例)
 * **群組授權裝飾器 (`require_group`):**
     * **單一職責原則:** 應創建一個獨立的裝飾器 (例如 `require_group`) 來處理基於群組的授權，與 `require_google_login` (負責登入驗證) 分開。
     * `require_group` 裝飾器應在 `require_google_login` *之後* 套用，以確保在檢查群組前使用者已經登入。
@@ -200,19 +208,19 @@
 
     * **`require_group` 裝飾器範例概念:**
         ```python
-        # 在 decorators.py 或 auth_utils.py
+        # 在 your_app/decorators.py 或 your_app/auth_utils.py
         import reflex as rx
         import functools
         from typing import List, Callable, TypeVar
-        # from ..state import AuthState # 假設 AuthState 是應用程式的 State
-        # from ..enums import UserGroup # 假設 UserGroup Enum
+        # from your_app.state import AuthState # 假設 AuthState 是應用程式的 State (例如 AppState)
+        # from your_app.enums import UserGroup # 假設 UserGroup Enum
 
         ComponentCallable = Callable[[], rx.Component]
         F = TypeVar('F', bound=ComponentCallable)
 
         def default_unauthorized_view_factory(
             required_groups: List[UserGroup],
-            current_user_groups_var: rx.Var[List[UserGroup]] # 傳入 rx.Var
+            current_user_groups_var: rx.Var[List[UserGroup]] # 傳入 rx.Var 以便反應式顯示
         ) -> rx.Component:
             """產生一個預設的未授權檢視元件。"""
             return rx.vstack(
@@ -229,7 +237,7 @@
                     rx.hstack(
                         rx.foreach(
                             current_user_groups_var,
-                            lambda group: rx.badge(group.value, color_scheme="grass")
+                            lambda group_item: rx.badge(group_item.value, color_scheme="grass")
                         ),
                         spacing="2"
                     ),
@@ -239,15 +247,18 @@
                 align="center",
                 spacing="3",
                 padding="2em",
-                border="1px solid #E2E8F0",
-                border_radius="md",
-                box_shadow="md",
+                border="1px solid var(--gray-a6)", # 使用 Radix Theme token
+                border_radius="var(--radius-3)",
+                box_shadow="var(--shadow-3)",
                 max_width="500px",
                 margin="2em auto",
             )
 
         def require_group(
             allowed_groups: List[UserGroup],
+            # 假設 AuthState 是您應用程式的主狀態類別或其基底，且已混入 GoogleAuthState
+            # 例如: from your_app.state import AppState as CurrentAuthState 
+            # unauthorized_view_func 的簽名也需要符合
             unauthorized_view_func: Callable[[List[UserGroup], rx.Var[List[UserGroup]]], rx.Component] | None = None
         ) -> Callable[[F], F]:
             """
@@ -259,43 +270,37 @@
             def decorator(func_to_protect: F) -> F:
                 @functools.wraps(func_to_protect)
                 def wrapper(*args, **kwargs) -> rx.Component:
-                    # 這裡的 AuthState 必須是當前頁面/組件上下文中的 State 實例。
-                    # Reflex 的頁面和組件通常會自動處理 State 的上下文。
-                    # 我們假設 AuthState.current_user_groups 是一個有效的 rx.Var[List[UserGroup]]。
+                    # 這裡的 AuthState 應指向應用程式實際使用的 AuthState 類別
+                    # 為了簡化，我們假設它就是 AuthState，但實際專案中可能是 AppState
+                    # from your_app.state import AuthState as AppSpecificAuthState
 
-                    # 創建一個 rx.Var[bool] 來表示是否有權限。
-                    # 這需要在一個 State 類別中定義為 @rx.var。
-                    # 為了通用性，我們創建一個臨時的內部組件和狀態來封裝這個邏輯。
-
-                    class GroupPermissionCheckState(AuthState): # 繼承自應用的 AuthState
-                        # allowed_groups_prop: rx.Var[List[UserGroup]] # 若要動態傳遞
-
+                    # 創建一個內部組件狀態來封裝權限檢查邏輯，使其反應式
+                    class PermissionCheckState(AuthState): # 應繼承自應用程式的 AuthState
                         @rx.var
-                        def has_required_permission(self) -> bool:
-                            # 確保已登入 (雖然外層的 require_google_login 應已處理)
+                        def has_permission(self) -> bool:
                             if not self.token_is_valid:
                                 return False
-                            # 檢查群組
-                            # print(f"權限檢查：使用者群組 {self.current_user_groups} vs 允許群組 {allowed_groups}")
+                            # self.current_user_groups 來自繼承的 AuthState
                             return any(group in self.current_user_groups for group in allowed_groups)
 
                     return rx.cond(
-                        GroupPermissionCheckState.is_hydrated, # 等待客戶端狀態就緒
+                        AuthState.is_hydrated, # 確保 GoogleAuthState 已完成客戶端水合
                         rx.cond(
-                            GroupPermissionCheckState.has_required_permission,
+                            PermissionCheckState.has_permission, # 使用內部狀態的權限檢查
                             func_to_protect(*args, **kwargs), # 如果有權限，渲染原始組件
-                            actual_unauthorized_view_factory(allowed_groups, GroupPermissionCheckState.current_user_groups)
+                            # 將 AuthState.current_user_groups 傳遞給未授權視圖
+                            actual_unauthorized_view_factory(allowed_groups, AuthState.current_user_groups) 
                         ),
-                        rx.center(rx.spinner(size="lg"), padding_y="5em") # 水合或檢查時的佔位符
+                        rx.center(rx.spinner(size="3"), padding_y="5em") # 水合或檢查時的佔位符 (Radix Spinner size "3" is medium)
                     )
                 return wrapper # type: ignore
             return decorator # type: ignore
         ```
         **使用範例：**
         ```python
-        # from .state import AuthState # 您的應用程式 AuthState
-        # from .enums import UserGroup
-        # from .decorators import require_group # 您定義的裝飾器
+        # from your_app.state import AppState # 假設 AppState 繼承了 AuthState
+        # from your_app.enums import UserGroup
+        # from your_app.decorators import require_group 
         # from reflex_google_auth import require_google_login
 
         # @rx.page(route="/admin_only")
@@ -303,17 +308,8 @@
         # @require_group(allowed_groups=[UserGroup.ADMIN]) # 2. 檢查是否為管理員
         # def admin_only_page() -> rx.Component:
         #     return rx.vstack(
-        #         rx.heading(f"管理員專區 - 歡迎 {AuthState.user_name}"),
+        #         rx.heading(f"管理員專區 - 歡迎 {AppState.user_name}"), # 使用 AppState
         #         # ... 管理員內容 ...
-        #     )
-
-        # @rx.page(route="/editor_or_admin")
-        # @require_google_login
-        # @require_group(allowed_groups=[UserGroup.ADMIN, UserGroup.EDITOR])
-        # def editor_or_admin_page() -> rx.Component:
-        #     return rx.vstack(
-        #         rx.heading(f"編輯區 - 使用者 {AuthState.user_name}"),
-        #         # ... 編輯者或管理員內容 ...
         #     )
         ```
 * **未授權處理 (UNAUTHORIZED_HANDLING):**
@@ -341,47 +337,57 @@
 * **初始化與生命週期管理 (INITIALIZATION_LIFESPAN_MANAGEMENT):**
     * Beanie 的初始化以及 `AsyncIOMotorClient` 的連線管理，應透過定義一個非同步上下文管理器 (`@asynccontextmanager`) 並將其加入 Reflex 應用程式的 `lifespan_tasks` 清單來實現。這種方式可以更優雅地管理資源的設定與清理。
     * `asynccontextmanager` 應包含 `AsyncIOMotorClient` 實例的建立、`beanie.init_beanie` 的呼叫，以及在 `finally` 區塊中關閉 `AsyncIOMotorClient` 實例。
-    * 範例 (通常在專案的 `rxconfig.py` 或主應用程式設定檔中):
+    * 範例 (通常在專案的 `rxconfig.py` 或主應用程式設定檔 `your_app/your_app.py` 中):
         ```python
-        # rxconfig.py 或您的主應用程式設定檔
+        # your_app/your_app.py (或 rxconfig.py)
         import reflex as rx
         import motor.motor_asyncio
         from beanie import init_beanie
         from contextlib import asynccontextmanager
-        from typing import AsyncIterator, Any # AsyncIterator 用於 asynccontextmanager
+        from typing import AsyncIterator
+        # from your_app.state import AppState # 假設 AppState 是您的主狀態
 
         # 假設您的 Beanie Document 模型定義在 your_app.models 模組
-        # 例如: from your_app.models import User, Item 
-        # 以及與身分驗證相關的 User 模型
-        # from your_app.models import User # (包含 google_sub, groups 等欄位)
+        # 例如: from your_app.models import User, Product 
 
-        motor_client: motor.motor_asyncio.AsyncIOMotorClient | None = None
+        _motor_client: motor.motor_asyncio.AsyncIOMotorClient | None = None
 
         @asynccontextmanager
         async def mongodb_lifespan_manager(app: rx.App) -> AsyncIterator[None]:
-            global motor_client
-            db_connection_string = "mongodb://localhost:27017" # 範例，應從設定讀取
+            """管理 MongoDB 連線和 Beanie 初始化的非同步上下文管理器。"""
+            global _motor_client
+            # 建議從 rx.Config 或環境變數讀取設定
+            # config = rx.get_config()
+            # db_connection_string = config.db_url # 假設您在 rx.Config 中定義了 db_url
+            db_connection_string = "mongodb://localhost:27017" # 範例連接字串
             db_name = "mydatabase" # 您的資料庫名稱
 
-            print(f"正在連線至 MongoDB ({db_name})...")
-            motor_client = motor.motor_asyncio.AsyncIOMotorClient(db_connection_string)
+            print(f"Lifespan: 正在連線至 MongoDB ({db_name})...")
+            _motor_client = motor.motor_asyncio.AsyncIOMotorClient(db_connection_string)
             
             try:
                 await init_beanie(
-                    database=motor_client[db_name],
+                    database=_motor_client[db_name],
                     document_models=[
                         "your_app.models.User",  # 包含身分驗證相關欄位的 User 模型
-                        "your_app.models.Product", 
+                        "your_app.models.Product", # 範例 Product 模型
                         # 列出所有其他的 Beanie Document 模型路徑
                     ]
                 )
-                print(f"已連線至 MongoDB ({db_name}) 並初始化 Beanie。")
+                print(f"Lifespan: 已連線至 MongoDB ({db_name}) 並初始化 Beanie。")
                 yield # 應用程式運行階段
             finally:
-                if motor_client:
-                    motor_client.close()
-                    print("已關閉 MongoDB 連線。")
-                motor_client = None
+                if _motor_client:
+                    _motor_client.close()
+                    print("Lifespan: 已關閉 MongoDB 連線。")
+                _motor_client = None
+        
+        # 在定義 App 實例時加入 lifespan_tasks
+        # app = rx.App(
+        #     state=AppState, 
+        #     lifespan_tasks=[mongodb_lifespan_manager],
+        #     # ... 其他 App 設定
+        # )
         ```
     * **重要提示**:
         * 使用 `@asynccontextmanager` 可以確保資源（如資料庫連線）在應用程式啟動時被正確設定，並在應用程式結束時（即使發生錯誤）被妥善清理。
@@ -399,8 +405,11 @@
         from pydantic import BaseModel, EmailStr, Field
         from beanie import Document, Indexed
         from enum import Enum # 用於 UserGroup
+        import datetime # 用於 last_login
 
-        # 假設 UserGroup Enum 定義在此或已匯入
+        # 從 your_app.enums 匯入 (如果 UserGroup 在那裡定義)
+        # from .enums import UserGroup 
+        # 為了範例獨立性，再次定義 UserGroup
         class UserGroup(str, Enum):
             ADMIN = "系統管理員"
             EDITOR = "編輯者"
@@ -415,11 +424,12 @@
         class User(Document):
             fullname: Optional[str] = None
             email: Indexed(EmailStr, unique=True) # Google Email
-            google_sub: Indexed(str, unique=True, sparse=True) # Google User ID, sparse 允許未來支援非 Google 登入
-            # hashed_password: Optional[str] = None # 如果僅用 Google 登入，此欄位可選或移除
+            google_sub: Indexed(str, unique=True, sparse=True) # Google User ID
             age: Optional[int] = Field(None, gt=0)
-            addresses: List[Address] = []
-            groups: List[UserGroup] = Field(default_factory=lambda: [UserGroup.VIEWER]) # 新使用者預設群組
+            addresses: List[Address] = Field(default_factory=list)
+            groups: List[UserGroup] = Field(default_factory=lambda: [UserGroup.VIEWER, UserGroup.AUTHENTICATED_USER])
+            created_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+            last_login: Optional[datetime.datetime] = None
 
             class Settings:
                 name = "users" # 明確指定集合名稱
@@ -435,10 +445,12 @@
 
 * **資料建立與更新 (DATA_CREATION_UPDATE):**
     * 使用 `.insert()`, `.replace()`, `.save()`, `.update()` 等方法。
-    * **使用者創建範例 (在 `AuthState.on_success` 中):**
+    * **使用者創建/更新範例 (在 `AuthState.on_success` 中):**
         ```python
-        # # (部分程式碼，展示如何在 on_success 中創建 User)
-        # from .models import User, UserGroup # 假設模型和 Enum 已定義
+        # # (部分程式碼，展示如何在 AuthState 的 on_success 中創建/更新 User)
+        # from your_app.models import User, UserGroup 
+        # from beanie.operators import Set # 用於更新
+        # import datetime
         # # ...
         # async def on_success(self, id_token: dict):
         #     await super().on_success(id_token)
@@ -447,21 +459,29 @@
         #         google_sub = self.tokeninfo.get("sub")
         #         user_name = self.tokeninfo.get("name")
         #
-        #         if google_sub: # 確保 google_sub 存在
+        #         current_groups = []
+        #         if google_sub: 
         #             existing_user = await User.find_one(User.google_sub == google_sub)
         #             if not existing_user:
+        #                 default_groups = [UserGroup.VIEWER, UserGroup.AUTHENTICATED_USER]
         #                 new_user = User(
         #                     fullname=user_name,
         #                     email=user_email,
         #                     google_sub=google_sub,
-        #                     groups=[UserGroup.VIEWER] # 新使用者的預設群組
+        #                     groups=default_groups,
+        #                     last_login=datetime.datetime.utcnow()
         #                 )
         #                 await new_user.insert()
+        #                 current_groups = new_user.groups
         #                 print(f"新使用者 {user_name} 已創建。")
         #             else:
-        #                 # 可選擇更新現有使用者資訊，例如 fullname 或最後登入時間
-        #                 # await existing_user.update(Set({User.fullname: user_name}))
-        #                 print(f"使用者 {existing_user.fullname} 已存在。")
+        #                 # 更新現有使用者資訊
+        #                 await existing_user.update(
+        #                     Set({User.fullname: user_name, User.last_login: datetime.datetime.utcnow()})
+        #                 )
+        #                 current_groups = existing_user.groups
+        #                 print(f"使用者 {existing_user.fullname} 已存在，資訊已更新。")
+        #             self._app_user_groups_var = current_groups # 更新 rx.Var
         # # ...
         ```
 
@@ -480,6 +500,37 @@
 
 * **關聯與嵌入 (RELATIONSHIPS_EMBEDDING):**
     * 根據資料存取模式合理選擇使用嵌入式文件或引用。
+    * **Beanie `Link` 與 `BackLink` 範例:**
+        ```python
+        # from typing import List 
+        # from beanie import Document, Link, BackLink, Indexed
+        # from pydantic import Field
+        # from your_app.models import User # 假設 User 已定義
+
+        # class Post(Document):
+        #     title: Indexed(str)
+        #     content: str
+        #     author: Link[User] 
+
+        #     class Settings:
+        #         name = "posts"
+
+        # # 在 User 模型中 (your_app/models.py)
+        # # class User(Document):
+        # #     ... (其他欄位) ...
+        # #     # 若要從 User 反查其所有 Post (一對多關係)
+        # #     # Beanie 的 BackLink 通常用於 Document 實例上，而非直接定義為模型欄位進行查詢
+        # #     # 查詢 User 的 Post 通常是: posts = await Post.find(Post.author.id_ == user_instance.id).to_list()
+        # #     # BackLink 更適用於在載入一個 Document 時自動預取相關聯的 Document。
+        # #     # 例如，如果 Post 有一個 category: Link[Category]，則 Category 可以有
+        # #     # posts: List[BackLink[Post]] = Field(original_field="category")
+        # #     # 以便在載入 Category 時，可以 .fetch_link(Category.posts)
+        #
+        # # 查詢 Post 並取得作者資訊
+        # # post_with_author = await Post.find_one(Post.title == "My First Post", fetch_links=True)
+        # # if post_with_author and post_with_author.author: # author 此時會是 User 物件
+        # #     print(f"文章 '{post_with_author.title}' 的作者是 {post_with_author.author.fullname}")
+        ```
 
 * **效能考量 (PERFORMANCE_CONSIDERATIONS):**
     * 正確使用索引和投影，考慮批次操作。
