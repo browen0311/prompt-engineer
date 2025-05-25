@@ -11,6 +11,7 @@
 
 ### 投影片
 - **[圖像紀錄風格投影片](slides_prompts/graphics-record-slides-v01.md)**：用於將內容轉換成圖像紀錄風格的 HTML 資訊圖表，運用手繪風格圖形和圖示，視覺化呈現專業知識。
+- **[圖像紀錄風格投影片 - 版本2](slides_prompts/graphics-record-slides-v02.md)**：用於將內容轉換成圖像紀錄風格的 HTML 資訊圖表（第二版），運用手繪風格圖形和圖示，視覺化呈現專業知識。
 
 ### 資訊圖表
 - **[資訊圖表縮圖](infomation_graphics/information-graphics-thumbnil-v01.md)**：用於生成高品質部落格文章縮圖，尺寸為 16:9 比例，包含視覺精緻的資訊圖表元素。
@@ -19,6 +20,9 @@
 
 ### 書籍
 - **[A4 書籍生成提示詞 - Alpha 版](book/a4-book-generate-alpha.md)**：**(尚在測試階段)**用於生成 A4 尺寸的書籍內容，適合用於教育或專業出版物。
+
+### 專案管理
+- **[專案規劃助理提示詞 - 繁體中文版 v01](project/project_plan_assistant_zhTW-v01.md)**：用於協助產生專案規劃相關內容的提示詞。
 
 ### 深度研究
 - **[深度研究提示詞生成器 - 繁體中文版 v01](deep_research/deep_research_prompt_generator_zhTW-v01.md)**：用於生成深度研究的提示詞，針對繁體中文使用者。
