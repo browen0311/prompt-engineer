@@ -1,0 +1,2649 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網際網路運作原理 - 從輸入網址到看見網頁</title>
+    
+    <!-- 字體引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol&family=Yomogi&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+    
+    <!-- 圖示和動畫庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --color-fashion1: #593C47;
+            --color-fashion2: #F2E63D;
+            --color-fashion3: #F2C53D;
+            --color-fashion4: #F25C05;
+            --color-fashion5: #F24405;
+            --color-text: #334155;
+            --color-background: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kaisei Decol', 'Yomogi', 'Zen Kurenaido', serif;
+            background: var(--color-background);
+            color: var(--color-text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 側邊欄樣式 */
+        .sidebar {
+            width: 25%;
+            background: var(--color-fashion1);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-title {
+            font-family: 'Yomogi', sans-serif;
+            font-size: 1.5rem;
+            color: var(--color-fashion2);
+            margin-bottom: 0.5rem;
+            transform: rotate(-1deg);
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: var(--color-fashion2);
+        }
+
+        .nav-item.active {
+            background: rgba(242, 91, 5, 0.2);
+            border-left-color: var(--color-fashion4);
+            color: var(--color-fashion2);
+        }
+
+        .nav-item i {
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+            color: var(--color-fashion3);
+        }
+
+        /* 主要內容區域 */
+        .main-content {
+            margin-left: 25%;
+            width: 75%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            padding: 3rem;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .slide.active {
+            display: block;
+            animation: fadeInRight 0.6s ease-out;
+        }
+
+        .slide-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* 手繪風格邊框 */
+        .hand-drawn-frame {
+            border: 3px solid var(--color-fashion1);
+            border-radius: 10px;
+            position: relative;
+            background: white;
+            transform: rotate(-0.5deg);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .hand-drawn-frame::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px dashed var(--color-fashion3);
+            border-radius: 12px;
+            z-index: -1;
+        }
+
+        /* 標題樣式 */
+        .slide-title {
+            font-family: 'Yomogi', sans-serif;
+            font-size: 2.5rem;
+            color: var(--color-fashion5);
+            text-align: center;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .slide-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 4px;
+            background: var(--color-fashion2);
+            border-radius: 2px;
+        }
+
+        .section-title {
+            font-family: 'Yomogi', sans-serif;
+            font-size: 1.8rem;
+            color: #1e40af;
+            margin: 2rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 0.8rem;
+            color: var(--color-fashion4);
+            font-size: 1.5rem;
+        }
+
+        .concept-title {
+            font-family: 'Yomogi', sans-serif;
+            font-weight: bold;
+            color: var(--color-fashion5);
+            font-size: 1.3rem;
+            margin: 1rem 0 0.8rem 0;
+        }
+
+        /* 內容框樣式 */
+        .content-box {
+            background: white;
+            border-radius: 10px;
+            padding: 0.5rem 1.5rem 1.8rem 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--color-fashion3);
+            position: relative;
+        }
+
+        .note-box {
+            background: linear-gradient(45deg, #fff9c4, #fef3c7);
+            border: 2px solid var(--color-fashion2);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .note-box::before {
+            content: '📌';
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            font-size: 1.5rem;
+            transform: rotate(15deg);
+        }
+
+        /* 對話框樣式 */
+        .speech-bubble {
+            background: white;
+            border: 3px solid var(--color-fashion1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            position: relative;
+            transform: rotate(0.5deg);
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 30px;
+            width: 0;
+            height: 0;
+            border: 15px solid transparent;
+            border-top-color: var(--color-fashion1);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 33px;
+            width: 0;
+            height: 0;
+            border: 12px solid transparent;
+            border-top-color: white;
+        }
+
+        /* 圖示容器 */
+        .icon-cluster {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .icon-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: rotate(-2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .icon-item:nth-child(even) {
+            transform: rotate(2deg);
+        }
+
+        .icon-item:hover {
+            transform: rotate(0deg) scale(1.1);
+        }
+
+        .icon-item i {
+            font-size: 2rem;
+            color: var(--color-fashion4);
+            margin-bottom: 0.5rem;
+        }
+
+        /* 流程步驟 */
+        .process-container {
+            margin: 2rem 0;
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border: 3px solid var(--color-fashion3);
+            border-radius: 15px;
+            position: relative;
+            transform: rotate(-1deg);
+            transition: transform 0.3s ease;
+        }
+
+        .process-step:nth-child(even) {
+            transform: rotate(1deg);
+        }
+
+        .process-step:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .process-arrow {
+            font-size: 2rem;
+            color: var(--color-fashion4);
+            margin: 0 1rem;
+        }
+
+        .step-number {
+            background: var(--color-fashion4);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem auto;
+            font-size: 1.2rem;
+        }
+
+        /* 關鍵字強調 */
+        .highlight {
+            background: linear-gradient(120deg, var(--color-fashion2) 0%, var(--color-fashion2) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.3em;
+            background-position: 0 88%;
+            padding: 0 0.2rem;
+        }
+
+        .keyword {
+            background: var(--color-fashion2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+            color: var(--color-fashion1);
+        }
+
+        /* 導覽按鈕 */
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--color-fashion4);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: rotate(-1deg);
+        }
+
+        .nav-btn:hover {
+            background: var(--color-fashion5);
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: rotate(-1deg);
+        }
+
+        /* 流程圖動畫容器 */
+        .flowchart-container {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .flowchart-controls {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .flowchart-btn {
+            background: var(--color-fashion3);
+            color: var(--color-fashion1);
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .flowchart-btn:hover {
+            background: var(--color-fashion4);
+            color: white;
+        }
+
+        .flow-node {
+            background: white;
+            border: 3px solid var(--color-fashion1);
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            margin: 1rem;
+            display: inline-block;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .flow-arrow {
+            color: var(--color-fashion4);
+            font-size: 2rem;
+            margin: 0 1rem;
+            opacity: 0;
+        }
+
+        /* 測驗題樣式 */
+        .quiz-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px dashed var(--color-fashion3);
+        }
+
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--color-fashion1);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--color-fashion3);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--color-fashion4);
+            background: #fff5e6;
+        }
+
+        .quiz-option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* 階層視覺化 */
+        .hierarchy-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .hierarchy-level {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .hierarchy-node {
+            background: white;
+            border: 3px solid var(--color-fashion1);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .hierarchy-line {
+            position: absolute;
+            width: 2px;
+            height: 40px;
+            background: var(--color-fashion3);
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 動畫路徑 */
+        .path-animation {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 2s linear forwards;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 80%;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .slide {
+                padding: 1rem;
+            }
+            
+            .slide-content {
+                padding: 1.5rem;
+            }
+            
+            .process-steps {
+                flex-direction: column;
+            }
+            
+            .icon-cluster {
+                flex-wrap: wrap;
+            }
+            
+            .navigation {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        /* 玻璃擬態效果 */
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+        }
+
+        /* 動畫關鍵幀 */
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% {
+                animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+                transform: translate3d(0, -30px, 0);
+            }
+            70% {
+                animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+                transform: translate3d(0, -15px, 0);
+            }
+            90% {
+                transform: translate3d(0,-4px,0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 側邊欄 -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">🌐 網路旅程</h1>
+                <p class="sidebar-subtitle">從輸入網址到看見網頁</p>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-slide="0">
+                    <i class="fas fa-home"></i>
+                    <span>前言：神奇旅程</span>
+                </div>
+                <div class="nav-item" data-slide="1">
+                    <i class="fas fa-users"></i>
+                    <span>網路世界角色</span>
+                </div>
+                <div class="nav-item" data-slide="2">
+                    <i class="fas fa-link"></i>
+                    <span>URL 結構解析</span>
+                </div>
+                <div class="nav-item" data-slide="3">
+                    <i class="fas fa-server"></i>
+                    <span>DNS 系統詳解</span>
+                </div>
+                <div class="nav-item" data-slide="4">
+                    <i class="fas fa-route"></i>
+                    <span>DNS 查詢流程</span>
+                </div>
+                <div class="nav-item" data-slide="5">
+                    <i class="fas fa-cogs"></i>
+                    <span>Web Server 工作</span>
+                </div>
+                <div class="nav-item" data-slide="6">
+                    <i class="fas fa-play"></i>
+                    <span>完整網頁工作流程</span>
+                </div>
+                <div class="nav-item" data-slide="7">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>安全性考量</span>
+                </div>
+                <div class="nav-item" data-slide="8">
+                    <i class="fas fa-rocket"></i>
+                    <span>現代網路 HTTP 技術趨勢</span>
+                </div>
+                <div class="nav-item" data-slide="9">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>總結與思考</span>
+                </div>
+                <div class="nav-item" data-slide="10">
+                    <i class="fas fa-check-square"></i>
+                    <span>學習評量</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- 主要內容區域 -->
+        <div class="main-content">
+            <!-- 投影片 0: 前言 -->
+            <div class="slide active" id="slide-0">
+                <div class="slide-content">
+                    <h1 class="slide-title">🌐 網際網路的神奇旅程</h1>
+                    
+                    <div class="speech-bubble">
+                        <p style="font-size: 1.2rem; text-align: center;">
+                            當你在手機上輸入 <span class="keyword">www.google.com</span> 並按下 Enter，
+                            短短幾秒就能看到 Google 首頁。<br><br>
+                            這個看似簡單的動作，背後隱藏著什麼樣的技術奧秘呢？
+                        </p>
+                    </div>
+
+                    <div class="icon-cluster">
+                        <div class="icon-item">
+                            <i class="fas fa-mobile-alt"></i>
+                            <small>手機</small>
+                        </div>
+                        <div class="icon-item">
+                            <i class="fas fa-wifi"></i>
+                            <small>網路</small>
+                        </div>
+                        <div class="icon-item">
+                            <i class="fas fa-server"></i>
+                            <small>伺服器</small>
+                        </div>
+                        <div class="icon-item">
+                            <i class="fas fa-globe"></i>
+                            <small>網頁</small>
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="concept-title">🎯 學習目標</h3>
+                        <p>本次課程將帶你深入了解：</p>
+                        <ul style="margin-left: 2rem; margin-top: 1rem;">
+                            <li>網路世界的主要角色和功能</li>
+                            <li>URL 結構的組成與意義</li>
+                            <li>DNS 系統的運作原理</li>
+                            <li>Web Server 如何處理請求</li>
+                            <li>從輸入網址到顯示網頁的完整流程</li>
+                            <li>現代網路 HTTP 技術的發展趨勢</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 1: 網路世界角色 -->
+            <div class="slide" id="slide-1">
+                <div class="slide-content">
+                    <h1 class="slide-title">🏙️ 網路世界的主要角色</h1>
+                    
+                    <div class="note-box">
+                        <p style="text-align: center; font-size: 1.1rem;">
+                            想像網際網路是一個巨大的城市，其中有幾個重要的角色...
+                        </p>
+                    </div>
+
+                    <div class="process-steps">
+                        <div class="process-step">
+                            <div class="step-number">1</div>
+                            <i class="fas fa-window-maximize fa-3x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                            <h3 class="concept-title">Browser 瀏覽器</h3>
+                            <p>就像你的交通工具，負責帶你到想去的地方</p>
+                            <small style="color: #666;">Chrome, Safari, Firefox</small>
+                        </div>
+                        
+                        <div class="process-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        
+                        <div class="process-step">
+                            <div class="step-number">2</div>
+                            <i class="fas fa-server fa-3x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                            <h3 class="concept-title">Web Server 網頁伺服器</h3>
+                            <p>就像城市中的商店，儲存並提供網頁內容</p>
+                            <small style="color: #666;">Apache, Nginx, IIS</small>
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="concept-title">🗺️ DNS - 網路世界的地址簿</h3>
+                        <p>
+                            <span class="keyword">DNS (Domain Name System)</span> 就像城市的導航系統，
+                            幫助你把 <span class="highlight">www.google.com</span> 
+                            這樣人類容易記憶的地址，轉換成電腦能理解的數字地址。
+                        </p>
+                    </div>
+
+                    <div class="speech-bubble">
+                        <h3 class="concept-title">💡 IP 位址：網路世界的門牌號碼</h3>
+                        <p>
+                            每台連接到網際網路的電腦都有一個獨特的 <span class="keyword">IP 位址</span>，
+                            就像門牌號碼一樣：
+                        </p>
+                        <div style="text-align: center; margin: 1rem 0; font-family: monospace; font-size: 1.2rem;">
+                            <code style="background: #f0f0f0; padding: 0.5rem; border-radius: 5px;">192.168.1.1</code>
+                            <span style="margin: 0 1rem;">或</span>
+                            <code style="background: #f0f0f0; padding: 0.5rem; border-radius: 5px;">2001:db8::1</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 2: URL 結構 -->
+            <div class="slide" id="slide-2">
+                <div class="slide-content">
+                    <h1 class="slide-title">🔗 URL 結構解析</h1>
+                    
+                    <div class="content-box">
+                        <h3 class="concept-title">📍 什麼是 URL？</h3>
+                        <p>
+                            <span class="keyword">URL (Uniform Resource Locator)</span> 
+                            就像網路世界的完整地址。讓我們用一個例子來理解：
+                        </p>
+                        
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.9rem; margin: 1rem 0; overflow-x: auto;">
+                            https://www.example.com:8080/docs/index.html?id=123&lang=zh-tw#section2
+                        </div>
+                    </div>
+
+                    <div class="process-container">
+                        <h3 class="section-title">
+                            <i class="fas fa-puzzle-piece"></i>
+                            URL 的組成部分
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 2rem 0;">
+                            <div class="hand-drawn-frame" style="padding: 1.5rem;">
+                                <h4 style="color: var(--color-fashion4); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-shield-alt"></i> Scheme 協定
+                                </h4>
+                                <code style="background: var(--color-fashion2); padding: 0.2rem 0.5rem; border-radius: 3px;">https</code>
+                                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                    告訴瀏覽器要用什麼方式與伺服器溝通
+                                </p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 1.5rem;">
+                                <h4 style="color: var(--color-fashion4); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-home"></i> Host 主機名稱
+                                </h4>
+                                <code style="background: var(--color-fashion2); padding: 0.2rem 0.5rem; border-radius: 3px;">www.example.com</code>
+                                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                    DNS 會把這個名稱轉換成 IP 位址
+                                </p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 1.5rem;">
+                                <h4 style="color: var(--color-fashion4); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-door-open"></i> Port 連接埠
+                                </h4>
+                                <code style="background: var(--color-fashion2); padding: 0.2rem 0.5rem; border-radius: 3px;">:8080</code>
+                                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                    特定的入口，HTTP 預設 80，HTTPS 預設 443
+                                </p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 1.5rem;">
+                                <h4 style="color: var(--color-fashion4); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-folder"></i> Path 路徑
+                                </h4>
+                                <code style="background: var(--color-fashion2); padding: 0.2rem 0.5rem; border-radius: 3px;">/docs/index.html</code>
+                                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                    告訴伺服器要哪個具體的檔案
+                                </p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 1.5rem;">
+                                <h4 style="color: var(--color-fashion4); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-search"></i> Query 查詢參數
+                                </h4>
+                                <code style="background: var(--color-fashion2); padding: 0.2rem 0.5rem; border-radius: 3px;">?id=123&lang=zh-tw</code>
+                                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                    傳送額外資訊給伺服器
+                                </p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 1.5rem;">
+                                <h4 style="color: var(--color-fashion4); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-bookmark"></i> Fragment 片段
+                                </h4>
+                                <code style="background: var(--color-fashion2); padding: 0.2rem 0.5rem; border-radius: 3px;">#section2</code>
+                                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                                    定位頁面內的特定位置，只在瀏覽器端使用
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URL 結構測驗題 -->
+                    <div class="quiz-container">
+                        <h3 class="section-title">
+                            <i class="fas fa-question-circle"></i>
+                            測試你的理解
+                        </h3>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">1. 在 URL "https://www.example.com:8080/docs/index.html" 中，哪個部分是協定？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'q1')">A. https</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q1')">B. www.example.com</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q1')">C. 8080</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q1')">D. /docs/index.html</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-q1"></div>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">2. 當 URL 中沒有指定連接埠時，HTTPS 預設使用哪個連接埠？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q2')">A. 80</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'q2')">B. 443</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q2')">C. 8080</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q2')">D. 3000</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-q2"></div>
+                        </div>
+
+                        <div>
+                            <div class="quiz-question">3. URL 中的 Fragment（片段）部分主要用於什麼？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q3')">A. 傳送密碼給伺服器</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q3')">B. 指定伺服器的位置</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'q3')">C. 定位頁面內的特定位置</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'q3')">D. 設定網頁的編碼</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-q3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 3: DNS 系統 -->
+            <div class="slide" id="slide-3">
+                <div class="slide-content">
+                    <h1 class="slide-title">🌐 DNS 系統詳解</h1>
+                    
+                    <div class="speech-bubble">
+                        <h3 class="concept-title">🤔 為什麼需要 DNS？</h3>
+                        <p>
+                            想像你要打電話給朋友，但只記得名字，不記得電話號碼。你會：
+                        </p>
+                        <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>先查看手機聯絡人</li>
+                            <li>如果沒有，問問其他朋友</li>
+                            <li>最後可能查電話簿</li>
+                        </ol>
+                        <p style="margin-top: 1rem;">
+                            <span class="keyword">DNS 就是網路世界的電話簿！</span>
+                        </p>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="section-title">
+                            <i class="fas fa-sitemap"></i>
+                            DNS 的階層結構
+                        </h3>
+                        
+                        <!-- DNS 階層視覺化圖 -->
+                        <div style="margin: 2rem 0;">
+                            <svg viewBox="0 0 800 650" style="max-width: 100%; height: auto;">
+                                <!-- 定義手繪風格濾鏡 -->
+                                <defs>
+                                    <filter id="roughPaper">
+                                        <feTurbulence type="fractalNoise" baseFrequency="0.04" result="noise" seed="1" />
+                                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+                                    </filter>
+                                </defs>
+                                
+                                <!-- 背景 -->
+                                <rect x="0" y="0" width="800" height="650" fill="#f8f9fa" />
+                                
+                                <!-- 根伺服器 -->
+                                <circle cx="400" cy="80" r="60" fill="#F24405" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="400" y="85" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="18" fill="white">根 DNS</text>
+                                <text x="400" y="105" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="14" fill="white">(13組)</text>
+                                
+                                <!-- 連線到 TLD -->
+                                <line x1="400" y1="140" x2="200" y2="220" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                <line x1="400" y1="140" x2="400" y2="220" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                <line x1="400" y1="140" x2="600" y2="220" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                
+                                <!-- 頂級域名伺服器 -->
+                                <rect x="140" y="220" width="120" height="80" rx="10" fill="#F25C05" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="200" y="255" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="16" fill="white">.com</text>
+                                <text x="200" y="275" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="12" fill="white">商業網站</text>
+                                
+                                <rect x="340" y="220" width="120" height="80" rx="10" fill="#F25C05" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="400" y="255" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="16" fill="white">.tw</text>
+                                <text x="400" y="275" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="12" fill="white">台灣網域</text>
+                                
+                                <rect x="540" y="220" width="120" height="80" rx="10" fill="#F25C05" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="600" y="255" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="16" fill="white">.org</text>
+                                <text x="600" y="275" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="12" fill="white">組織機構</text>
+                                
+                                <!-- 連線到權威 DNS -->
+                                <line x1="200" y1="300" x2="150" y2="360" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                <line x1="200" y1="300" x2="250" y2="360" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                <line x1="400" y1="300" x2="400" y2="360" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                <line x1="600" y1="300" x2="550" y2="360" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                <line x1="600" y1="300" x2="650" y2="360" stroke="#F2C53D" stroke-width="3" stroke-dasharray="5,5" />
+                                
+                                <!-- 權威 DNS 伺服器 -->
+                                <ellipse cx="150" cy="400" rx="70" ry="40" fill="#F2C53D" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="150" y="400" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="14" fill="#593C47">google.com</text>
+                                <text x="150" y="418" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="11" fill="#593C47">DNS</text>
+                                
+                                <ellipse cx="250" cy="400" rx="70" ry="40" fill="#F2C53D" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="250" y="400" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="14" fill="#593C47">facebook.com</text>
+                                <text x="250" y="418" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="11" fill="#593C47">DNS</text>
+                                
+                                <ellipse cx="400" cy="400" rx="70" ry="40" fill="#F2C53D" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="400" y="400" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="14" fill="#593C47">gov.tw</text>
+                                <text x="400" y="418" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="11" fill="#593C47">DNS</text>
+                                
+                                <ellipse cx="550" cy="400" rx="70" ry="40" fill="#F2C53D" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="550" y="400" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="14" fill="#593C47">wikipedia.org</text>
+                                <text x="550" y="418" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="11" fill="#593C47">DNS</text>
+                                
+                                <ellipse cx="650" cy="400" rx="70" ry="40" fill="#F2C53D" stroke="#593C47" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="650" y="400" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="14" fill="#593C47">w3.org</text>
+                                <text x="650" y="418" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="11" fill="#593C47">DNS</text>
+                                
+                                <!-- 本地 DNS -->
+                                <rect x="300" y="530" width="200" height="80" rx="15" fill="#593C47" stroke="#F2E63D" stroke-width="3" filter="url(#roughPaper)" />
+                                <text x="400" y="560" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="16" fill="#F2E63D">本地 DNS 伺服器</text>
+                                <text x="400" y="585" text-anchor="middle" font-family="Kaisei Decol, serif" font-size="12" fill="#F2E63D">(ISP 提供)</text>
+                                
+                                <!-- 連線從本地到上層 -->
+                                <path d="M 400 530 Q 300 530, 200 440" stroke="#F2E63D" stroke-width="2" fill="none" marker-end="url(#arrowhead)" opacity="0.6" />
+                                <path d="M 400 530 Q 400 450, 400 450" stroke="#F2E63D" stroke-width="2" fill="none" marker-end="url(#arrowhead)" opacity="0.6" />
+                                <path d="M 400 530 Q 500 530, 600 440" stroke="#F2E63D" stroke-width="2" fill="none" marker-end="url(#arrowhead)" opacity="0.6" />
+                                
+                                <!-- 箭頭標記 -->
+                                <defs>
+                                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#F2E63D" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- 標註 -->
+                                <text x="50" y="30" font-family="Yomogi, sans-serif" font-size="24" fill="#593C47" font-weight="bold">DNS 階層式架構</text>
+                                <text x="50" y="55" font-family="Kaisei Decol, serif" font-size="14" fill="#666">從根到葉的樹狀結構</text>
+                            </svg>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; margin: 2rem 0; flex-wrap: wrap; gap: 0.5rem;">
+                            <div class="process-step" style="flex: none; width: 200px;">
+                                <i class="fas fa-crown fa-2x" style="color: var(--color-fashion5); margin-bottom: 1rem;"></i>
+                                <h4 style="color: var(--color-fashion5);">根 DNS 伺服器</h4>
+                                <p style="font-size: 0.9rem;">全世界只有 13 組，總公司級別</p>
+                            </div>
+                            
+                            <div class="process-arrow">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            
+                            <div class="process-step" style="flex: none; width: 200px;">
+                                <i class="fas fa-building fa-2x" style="color: var(--color-fashion4); margin-bottom: 1rem;"></i>
+                                <h4 style="color: var(--color-fashion4);">頂級域名伺服器</h4>
+                                <p style="font-size: 0.9rem;">管理 .com、.org、.tw 等</p>
+                            </div>
+                            
+                            <div class="process-arrow">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            
+                            <div class="process-step" style="flex: none; width: 200px;">
+                                <i class="fas fa-user-tie fa-2x" style="color: var(--color-fashion3); margin-bottom: 1rem;"></i>
+                                <h4 style="color: var(--color-fashion3);">權威 DNS 伺服器</h4>
+                                <p style="font-size: 0.9rem;">負責特定網域的最終解析</p>
+                            </div>
+                            
+                            <div class="process-arrow">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            
+                            <div class="process-step" style="flex: none; width: 200px;">
+                                <i class="fas fa-user fa-2x" style="color: var(--color-fashion1); margin-bottom: 1rem;"></i>
+                                <h4 style="color: var(--color-fashion1);">本地 DNS 伺服器</h4>
+                                <p style="font-size: 0.9rem;">你的私人助理，通常由 ISP 提供</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <h3 class="concept-title">💾 DNS 快取機制</h3>
+                        <p>為了提高效率，DNS 在多個層級都有快取：</p>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                            <div style="text-align: center;">
+                                <i class="fas fa-window-maximize fa-2x" style="color: var(--color-fashion4);"></i>
+                                <p><strong>瀏覽器快取</strong><br><small>短期記憶</small></p>
+                            </div>
+                            <div style="text-align: center;">
+                                <i class="fas fa-desktop fa-2x" style="color: var(--color-fashion4);"></i>
+                                <p><strong>系統快取</strong><br><small>長期記憶</small></p>
+                            </div>
+                            <div style="text-align: center;">
+                                <i class="fas fa-server fa-2x" style="color: var(--color-fashion4);"></i>
+                                <p><strong>本地 DNS 快取</strong><br><small>社區公告欄</small></p>
+                            </div>
+                        </div>
+                        <p style="margin-top: 1rem;">
+                            每個快取都有 <span class="keyword">TTL (Time To Live)</span>，
+                            就像食物的保存期限！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 4: DNS 查詢流程 -->
+            <div class="slide" id="slide-4">
+                <div class="slide-content">
+                    <h1 class="slide-title">🔍 DNS 查詢流程</h1>
+                    
+                    <div class="flowchart-container">
+                        <h3 class="section-title">
+                            <i class="fas fa-route"></i>
+                            DNS 訪問流程示意
+                        </h3>
+                        
+                        <div class="flowchart-controls">
+                            <button class="flowchart-btn" onclick="startDNSVisitAnimation()">
+                                <i class="fas fa-play"></i> 開始訪問流程
+                            </button>
+                            <!-- <button class="flowchart-btn" onclick="stepDNSAnimation()">
+                                <i class="fas fa-step-forward"></i> 逐步演示
+                            </button> -->
+                            <button class="flowchart-btn" onclick="resetDNSVisitAnimation()">
+                                <i class="fas fa-redo"></i> 重新開始
+                            </button>
+                        </div>
+                        
+                        <!-- DNS 訪問流程視覺化 -->
+                        <div id="dns-visit-animation" style="margin: 2rem 0;">
+                            <svg viewBox="0 0 800 500" style="max-width: 100%; height: auto;">
+                                <!-- 用戶 -->
+                                <g id="user-group">
+                                    <circle cx="100" cy="250" r="30" fill="#F2E63D" stroke="#593C47" stroke-width="3" />
+                                    <text x="100" y="255" text-anchor="middle" font-size="12" fill="#593C47">用戶</text>
+                                    <text x="100" y="295" text-anchor="middle" font-size="10" fill="#666">想訪問網站</text>
+                                </g>
+                                
+                                <!-- 瀏覽器快取 -->
+                                <g id="browser-cache" opacity="0">
+                                    <rect x="200" y="230" width="80" height="40" rx="5" fill="#F2C53D" stroke="#593C47" stroke-width="2" />
+                                    <text x="240" y="252" text-anchor="middle" font-size="11" fill="#593C47">瀏覽器快取</text>
+                                </g>
+                                
+                                <!-- 系統快取 -->
+                                <g id="system-cache" opacity="0">
+                                    <rect x="320" y="230" width="80" height="40" rx="5" fill="#F2C53D" stroke="#593C47" stroke-width="2" />
+                                    <text x="360" y="252" text-anchor="middle" font-size="11" fill="#593C47">系統快取</text>
+                                </g>
+                                
+                                <!-- 本地 DNS -->
+                                <g id="local-dns" opacity="0">
+                                    <rect x="450" y="220" width="100" height="60" rx="10" fill="#F25C05" stroke="#593C47" stroke-width="3" />
+                                    <text x="500" y="245" text-anchor="middle" font-size="12" fill="white">本地 DNS</text>
+                                    <text x="500" y="262" text-anchor="middle" font-size="10" fill="white">(ISP)</text>
+                                </g>
+                                
+                                <!-- 根 DNS -->
+                                <g id="root-dns" opacity="0">
+                                    <circle cx="650" cy="100" r="40" fill="#F24405" stroke="#593C47" stroke-width="3" />
+                                    <text x="650" y="105" text-anchor="middle" font-size="12" fill="white">根 DNS</text>
+                                </g>
+                                
+                                <!-- TLD DNS -->
+                                <g id="tld-dns" opacity="0">
+                                    <rect x="600" y="220" width="100" height="60" rx="10" fill="#F24405" stroke="#593C47" stroke-width="3" />
+                                    <text x="650" y="245" text-anchor="middle" font-size="12" fill="white">.com DNS</text>
+                                </g>
+                                
+                                <!-- 權威 DNS -->
+                                <g id="auth-dns" opacity="0">
+                                    <ellipse cx="650" cy="380" rx="60" ry="35" fill="#F2C53D" stroke="#593C47" stroke-width="3" />
+                                    <text x="650" y="385" text-anchor="middle" font-size="12" fill="#593C47">example.com</text>
+                                    <text x="650" y="400" text-anchor="middle" font-size="10" fill="#593C47">權威 DNS</text>
+                                </g>
+                                
+                                <!-- 動畫路徑 -->
+                                <path id="path1" d="M 130 250 L 200 250" stroke="#F2E63D" stroke-width="3" fill="none" opacity="0" />
+                                <path id="path2" d="M 280 250 L 320 250" stroke="#F2E63D" stroke-width="3" fill="none" opacity="0" />
+                                <path id="path3" d="M 400 250 L 450 250" stroke="#F25C05" stroke-width="3" fill="none" opacity="0" />
+                                <path id="path4" d="M 500 220 L 630 140" stroke="#F24405" stroke-width="3" fill="none" opacity="0" />
+                                <path id="path5" d="M 650 140 L 650 220" stroke="#F24405" stroke-width="3" fill="none" opacity="0" />
+                                <path id="path6" d="M 650 280 L 650 345" stroke="#F2C53D" stroke-width="3" fill="none" opacity="0" />
+                                <path id="path-return" d="M 590 380 Q 400 400, 130 250" stroke="#4CAF50" stroke-width="3" fill="none" stroke-dasharray="5,5" opacity="0" />
+                                
+                                <!-- 結果顯示 -->
+                                <g id="result" opacity="0">
+                                    <rect x="30" y="170" width="140" height="40" rx="5" fill="#4CAF50" stroke="#593C47" stroke-width="2" />
+                                    <text x="100" y="195" text-anchor="middle" font-size="12" fill="white">IP: 93.184.215.14</text>
+                                </g>
+                                
+                                <!-- 步驟說明 -->
+                                <text id="step-text" x="400" y="30" text-anchor="middle" font-size="16" fill="#593C47" font-weight="bold"></text>
+                            </svg>
+                        </div>
+                        
+                        <div id="dns-step-description" style="background: white; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid var(--color-fashion4); text-align: center;">
+                            <p>點擊「開始訪問流程」查看 DNS 解析的完整過程！</p>
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="concept-title">🔄 遞迴查詢 vs 迭代查詢</h3>
+                        
+                        <!-- 查詢方式視覺化比較 -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                            <!-- 遞迴查詢 -->
+                            <div class="hand-drawn-frame" style="padding: 1rem;">
+                                <h4 style="color: var(--color-fashion4); text-align: center;">
+                                    <i class="fas fa-recycle"></i> 遞迴查詢
+                                </h4>
+                                <svg viewBox="0 0 300 250" style="max-width: 100%; height: auto;">
+                                    <text x="150" y="20" text-anchor="middle" font-size="12" fill="#593C47">「幫我查到結果」</text>
+                                    
+                                    <!-- 用戶 -->
+                                    <circle cx="50" cy="60" r="20" fill="#F2E63D" stroke="#593C47" stroke-width="2" />
+                                    <text x="50" y="65" text-anchor="middle" font-size="10">用戶</text>
+                                    
+                                    <!-- 本地 DNS -->
+                                    <rect x="120" y="45" width="60" height="30" rx="5" fill="#F25C05" stroke="#593C47" stroke-width="2" />
+                                    <text x="150" y="63" text-anchor="middle" font-size="10" fill="white">本地 DNS</text>
+                                    
+                                    <!-- 上層 DNS 們 -->
+                                    <circle cx="250" cy="60" r="15" fill="#F24405" stroke="#593C47" stroke-width="2" />
+                                    <text x="250" y="65" text-anchor="middle" font-size="9" fill="white">根</text>
+                                    
+                                    <circle cx="250" cy="110" r="15" fill="#F24405" stroke="#593C47" stroke-width="2" />
+                                    <text x="250" y="115" text-anchor="middle" font-size="9" fill="white">TLD</text>
+                                    
+                                    <circle cx="250" cy="160" r="15" fill="#F2C53D" stroke="#593C47" stroke-width="2" />
+                                    <text x="250" y="165" text-anchor="middle" font-size="9">權威</text>
+                                    
+                                    <!-- 箭頭說明 -->
+                                    <path d="M 70 50 L 120 50" stroke="#F25C05" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <text x="90" y="45" text-anchor="middle" font-size="8" fill="#666">1. 詢問</text>
+                                    
+                                    <path d="M 180 55 L 235 55" stroke="#F24405" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <path d="M 235 65 L 180 65" stroke="#F2C53D" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <path d="M 255 75 L 255 95" stroke="#F24405" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <path d="M 245 95 L 245 75" stroke="#F2C53D" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <path d="M 255 125 L 255 145" stroke="#F24405" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <path d="M 245 145 L 245 125" stroke="#F2C53D" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <text x="190" y="50" font-size="8" fill="#666">2. 查詢</text>
+                                    
+                                    <path d="M 120 65 L 70 65" stroke="#4CAF50" stroke-width="2" marker-end="url(#arrowhead-r)" />
+                                    <text x="95" y="80" text-anchor="middle" font-size="8" fill="#666">3. 返回結果</text>
+                                    
+                                    <rect x="20" y="200" width="260" height="40" rx="5" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2" />
+                                    <text x="150" y="215" text-anchor="middle" font-size="10" fill="#2E7D32">本地 DNS 負責所有查詢工作</text>
+                                    <text x="150" y="230" text-anchor="middle" font-size="10" fill="#2E7D32">用戶只需等待最終結果</text>
+                                    
+                                    <!-- 箭頭定義 -->
+                                    <defs>
+                                        <marker id="arrowhead-r" markerWidth="5" markerHeight="3.5" refX="3.5" refY="1.5" orient="auto">
+                                            <polygon points="0 0, 5 1.75, 0 3.5" fill="#F25C05" />
+                                        </marker>
+                                    </defs>
+                                </svg>
+                            </div>
+                            
+                            <!-- 迭代查詢 -->
+                            <div class="hand-drawn-frame" style="padding: 1rem;">
+                                <h4 style="color: var(--color-fashion5); text-align: center;">
+                                    <i class="fas fa-step-forward"></i> 迭代查詢
+                                </h4>
+                                <svg viewBox="0 0 300 250" style="max-width: 100%; height: auto;">
+                                    <text x="150" y="20" text-anchor="middle" font-size="12" fill="#593C47">「告訴我下一步找誰」</text>
+                                    
+                                    <!-- 本地 DNS (查詢者) -->
+                                    <rect x="30" y="100" width="60" height="30" rx="5" fill="#F25C05" stroke="#593C47" stroke-width="2" />
+                                    <text x="60" y="118" text-anchor="middle" font-size="10" fill="white">本地 DNS</text>
+                                    
+                                    <!-- DNS 層級 -->
+                                    <circle cx="150" cy="60" r="15" fill="#F24405" stroke="#593C47" stroke-width="2" />
+                                    <text x="150" y="65" text-anchor="middle" font-size="9" fill="white">根</text>
+                                    
+                                    <circle cx="220" cy="115" r="15" fill="#F24405" stroke="#593C47" stroke-width="2" />
+                                    <text x="220" y="120" text-anchor="middle" font-size="9" fill="white">TLD</text>
+                                    
+                                    <circle cx="150" cy="170" r="15" fill="#F2C53D" stroke="#593C47" stroke-width="2" />
+                                    <text x="150" y="175" text-anchor="middle" font-size="9">權威</text>
+                                    
+                                    <!-- 查詢路徑 -->
+                                    <path d="M 90 92 L 132 61" stroke="#F24405" stroke-width="2" marker-end="url(#arrowhead-i)" />
+                                    <text x="100" y="70" font-size="10" fill="#666">1</text>
+                                    
+                                    <path d="M 135 75 L 94 105" stroke="#F24405" stroke-width="2" marker-end="url(#arrowhead-i)" stroke-dasharray="3,3" />
+                                    <text x="115" y="105" transform="rotate(-40, 115, 105)" font-size="8" fill="#666">找 TLD</text>
+                                    
+                                    <path d="M 92 114 L 203 114" stroke="#F24405" stroke-width="2" marker-end="url(#arrowhead-i)" />
+                                    <text x="145" y="110" font-size="10" fill="#666">2</text>
+                                    
+                                    <path d="M 203 121 L 92 121" stroke="#F24405" stroke-width="2" marker-end="url(#arrowhead-i)" stroke-dasharray="3,3" />
+                                    <text x="145" y="135" font-size="8" fill="#666">找權威</text>
+                                    
+                                    <path d="M 93 132 L 133 159" stroke="#F2C53D" stroke-width="2" marker-end="url(#arrowhead-i)" />
+                                    <text x="112" y="137" font-size="10" fill="#666">3</text>
+                                    
+                                    <path d="M 132 170 L 86 139" stroke="#4CAF50" stroke-width="2" marker-end="url(#arrowhead-i)" stroke-dasharray="3,3" />
+                                    <text x="95" y="160" font-size="8" transform="rotate(30, 95, 160)" fill="#666">IP 位址</text>
+                                    
+                                    <rect x="20" y="200" width="260" height="40" rx="5" fill="#FFF3E0" stroke="#F57C00" stroke-width="2" />
+                                    <text x="150" y="215" text-anchor="middle" font-size="10" fill="#E65100">本地 DNS 逐步詢問每一層</text>
+                                    <text x="150" y="230" text-anchor="middle" font-size="10" fill="#E65100">每層只告訴下一步該找誰</text>
+                                    
+                                    <!-- 箭頭定義 -->
+                                    <defs>
+                                        <marker id="arrowhead-i" markerWidth="7" markerHeight="4.9" refX="6.3" refY="2.45" orient="auto">
+                                            <polygon points="0 0, 7 2.45, 0 4.9" fill="#F24405" />
+                                        </marker>
+                                    </defs>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 5: Web Server 工作 -->
+            <div class="slide" id="slide-5">
+                <div class="slide-content">
+                    <h1 class="slide-title">⚙️ Web Server 的工作原理</h1>
+                    
+                    <div class="speech-bubble">
+                        <h3 class="concept-title">🍽️ Web Server 就像餐廳服務生</h3>
+                        <p>當客人（瀏覽器）提出要求時，它需要：</p>
+                        <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>理解客人的需求</li>
+                            <li>找到對應的資源</li>
+                            <li>確認客人有權限取得</li>
+                            <li>提供服務</li>
+                            <li>記錄服務過程</li>
+                        </ol>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="section-title">
+                            <i class="fas fa-cogs"></i>
+                            HTTP 請求處理流程
+                        </h3>
+                        
+                        <div class="process-steps" style="flex-direction: column; gap: 1rem;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                <div class="process-step" style="flex: 1; margin: 0 0.5rem;">
+                                    <div class="step-number">1</div>
+                                    <i class="fas fa-inbox fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                    <h4>接收請求</h4>
+                                    <p>解析 HTTP 請求</p>
+                                    <ul style="text-align: left; font-size: 0.8rem; list-style-position: inside;">
+                                        <li>Method（方法）</li>
+                                        <li>Path（路徑）</li>
+                                        <li>Header（標頭）</li>
+                                        <li>［可能有］Payload（傳送過來的資料）</li>
+                                    </ul>
+                                </div>
+                                <div class="process-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="process-step" style="flex: 1; margin: 0 0.5rem;">
+                                    <div class="step-number">2</div>
+                                    <i class="fas fa-map-marker-alt fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                    <h4>資源定位</h4>
+                                    <p>靜態檔案或動態程式</p>
+                                </div>
+                                <div class="process-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="process-step" style="flex: 1; margin: 0 0.5rem;">
+                                    <div class="step-number">3</div>
+                                    <i class="fas fa-shield-alt fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                    <h4><span style="font-size: 0.7rem;">（系統對於檔案的）</span>權限檢查</h4>
+                                    <p>系統內的檔案認證與授權驗證</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                <div class="process-step" style="flex: 1; margin: 0 0.5rem;">
+                                    <div class="step-number">4</div>
+                                    <i class="fas fa-play fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                    <h4>處理請求</h4>
+                                    <p>執行程式或讀取檔案</p>
+                                </div>
+                                <div class="process-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="process-step" style="flex: 1; margin: 0 0.5rem;">
+                                    <div class="step-number">5</div>
+                                    <i class="fas fa-box fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                    <h4>組裝回應</h4>
+                                    <p>Status Code（狀態碼）、Headers、內容</p>
+                                </div>
+                                <div class="process-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="process-step" style="flex: 1; margin: 0 0.5rem;">
+                                    <div class="step-number">6</div>
+                                    <i class="fas fa-paper-plane fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                    <h4>回傳結果</h4>
+                                    <p>傳送給瀏覽器</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <h3 class="concept-title">📊 HTTP 狀態碼含義</h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: #d4edda; border-radius: 8px;">
+                                <strong style="color: #155724;">2xx</strong><br>
+                                <small>Success 成功</small><br>
+                                <span style="font-size: 0.8rem;">200 OK</span>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: #cdf3cd; border-radius: 8px;">
+                                <strong style="color: #856404;">3xx</strong><br>
+                                <small>Redirect 重新定向</small><br>
+                                <span style="font-size: 0.8rem;">301 Move Permanently</span>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: #f8d7da; border-radius: 8px;">
+                                <strong style="color: #7f7b9a;">4xx</strong><br>
+                                <small>Client-side Error 客戶端錯誤</small><br>
+                                <span style="font-size: 0.8rem;">404 Not Found</span>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: #f5c6cb; border-radius: 8px;">
+                                <strong style="color: #611613;">5xx</strong><br>
+                                <small>Server-side Error 伺服器錯誤</small><br>
+                                <span style="font-size: 0.8rem;">500 Internal Server Error</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 6: 完整流程演示 -->
+            <div class="slide" id="slide-6">
+                <div class="slide-content">
+                    <h1 class="slide-title">🎬 完整流程演示</h1>
+                    
+                    <div class="note-box">
+                        <p style="text-align: center; font-size: 1.1rem;">
+                            讓我們追蹤一個完整的例子：訪問 
+                            <span class="keyword">https://www.example.com/index.html</span>
+                        </p>
+                    </div>
+
+                    <div class="flowchart-container">
+                        <div class="flowchart-controls">
+                            <button class="flowchart-btn" onclick="startFullAnimation()">
+                                <i class="fas fa-play"></i> 完整演示
+                            </button>
+                            <!-- <button class="flowchart-btn" onclick="nextStep()">
+                                <i class="fas fa-step-forward"></i> 下一步
+                            </button> -->
+                            <button class="flowchart-btn" onclick="resetFullAnimation()">
+                                <i class="fas fa-redo"></i> 重新開始
+                            </button>
+                        </div>
+                        
+                        <!-- 完整流程路徑動畫 -->
+                        <div id="full-process-animation" style="margin: 2rem 0;">
+                            <svg viewBox="0 0 900 600" style="max-width: 100%; height: auto;">
+                                <!-- 背景 -->
+                                <rect x="0" y="0" width="900" height="600" fill="#f8f9fa" />
+                                
+                                <!-- 標題 -->
+                                <text x="450" y="30" text-anchor="middle" font-family="Yomogi, sans-serif" font-size="20" fill="#593C47" font-weight="bold">從輸入網址到看見網頁的完整旅程</text>
+                                
+                                <!-- 用戶電腦 -->
+                                <g id="user-computer">
+                                    <rect x="50" y="250" width="120" height="80" rx="10" fill="#F2E63D" stroke="#593C47" stroke-width="3" />
+                                    <text x="110" y="275" text-anchor="middle" font-size="12" fill="#593C47">你的電腦</text>
+                                    <text x="110" y="295" text-anchor="middle" font-size="10" fill="#593C47">瀏覽器</text>
+                                    <circle cx="110" cy="310" r="3" fill="#593C47" />
+                                </g>
+                                
+                                <!-- 本地 DNS -->
+                                <g id="local-dns-full" opacity="0">
+                                    <rect x="250" y="100" width="100" height="60" rx="10" fill="#F25C05" stroke="#593C47" stroke-width="3" />
+                                    <text x="300" y="125" text-anchor="middle" font-size="12" fill="white">本地 DNS</text>
+                                    <text x="300" y="145" text-anchor="middle" font-size="10" fill="white">(ISP)</text>
+                                </g>
+                                
+                                <!-- 根 DNS -->
+                                <g id="root-dns-full" opacity="0">
+                                    <circle cx="500" cy="80" r="35" fill="#F24405" stroke="#593C47" stroke-width="3" />
+                                    <text x="500" y="85" text-anchor="middle" font-size="12" fill="white">根 DNS</text>
+                                </g>
+                                
+                                <!-- TLD DNS -->
+                                <g id="tld-dns-full" opacity="0">
+                                    <rect x="600" y="130" width="80" height="50" rx="8" fill="#F24405" stroke="#593C47" stroke-width="3" />
+                                    <text x="640" y="160" text-anchor="middle" font-size="12" fill="white">.com</text>
+                                </g>
+                                
+                                <!-- 權威 DNS -->
+                                <g id="auth-dns-full" opacity="0">
+                                    <ellipse cx="750" cy="200" rx="50" ry="30" fill="#F2C53D" stroke="#593C47" stroke-width="3" />
+                                    <text x="750" y="205" text-anchor="middle" font-size="11" fill="#593C47">example.com</text>
+                                    <text x="750" y="220" text-anchor="middle" font-size="9" fill="#593C47">DNS</text>
+                                </g>
+                                
+                                <!-- Web 伺服器 -->
+                                <g id="web-server" opacity="0">
+                                    <rect x="700" y="400" width="130" height="100" rx="15" fill="#593C47" stroke="#F2E63D" stroke-width="3" />
+                                    <text x="765" y="430" text-anchor="middle" font-size="12" fill="#F2E63D">Web 伺服器</text>
+                                    <text x="765" y="450" text-anchor="middle" font-size="10" fill="#F2E63D">example.com</text>
+                                    <text x="765" y="470" text-anchor="middle" font-size="9" fill="#F2E63D">93.184.215.14</text>
+                                </g>
+                                
+                                <!-- 動畫路徑 -->
+                                <!-- 1. 用戶到本地 DNS -->
+                                <path id="path-to-local-dns" d="M 170 280 Q 210 190, 250 130" stroke="#F2E63D" stroke-width="3" fill="none" opacity="0" marker-end="url(#arrow1)" />
+                                
+                                <!-- 2. 本地 DNS 到根 DNS -->
+                                <path id="path-to-root" d="M 350 130 Q 425 105, 465 80" stroke="#F24405" stroke-width="3" fill="none" opacity="0" marker-end="url(#arrow2)" />
+                                
+                                <!-- 3. 根 DNS 到 TLD -->
+                                <path id="path-to-tld" d="M 535 80 Q 567 105, 600 130" stroke="#F24405" stroke-width="3" fill="none" opacity="0" marker-end="url(#arrow2)" />
+                                
+                                <!-- 4. TLD 到權威 DNS -->
+                                <path id="path-to-auth" d="M 680 155 Q 730 170, 730 170" stroke="#F2C53D" stroke-width="3" fill="none" opacity="0" marker-end="url(#arrow3)" />
+                                
+                                <!-- 5. DNS 結果返回 -->
+                                <path id="path-dns-return" d="M 700 200 Q 400 300, 170 290" stroke="#4CAF50" stroke-width="3" fill="none" stroke-dasharray="5,5" opacity="0" marker-end="url(#arrow4)" />
+                                
+                                <!-- 6. 連接 Web 伺服器 -->
+                                <path id="path-to-server" d="M 170 310 Q 435 355, 700 450" stroke="#593C47" stroke-width="3" fill="none" opacity="0" marker-end="url(#arrow5)" />
+                                
+                                <!-- 7. 伺服器回傳網頁 -->
+                                <path id="path-server-return" d="M 700 470 Q 435 445, 170 320" stroke="#4CAF50" stroke-width="3" fill="none" stroke-dasharray="5,5" opacity="0" marker-end="url(#arrow4)" />
+                                
+                                <!-- 箭頭定義 -->
+                                <defs>
+                                    <marker id="arrow1" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" fill="#F2E63D">
+                                        <polygon points="0 0, 10 3.5, 0 7" />
+                                    </marker>
+                                    <marker id="arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" fill="#F24405">
+                                        <polygon points="0 0, 10 3.5, 0 7" />
+                                    </marker>
+                                    <marker id="arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" fill="#F2C53D">
+                                        <polygon points="0 0, 10 3.5, 0 7" />
+                                    </marker>
+                                    <marker id="arrow4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" fill="#4CAF50">
+                                        <polygon points="0 0, 10 3.5, 0 7" />
+                                    </marker>
+                                    <marker id="arrow5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" fill="#593C47">
+                                        <polygon points="0 0, 10 3.5, 0 7" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- 步驟文字說明 -->
+                                <text id="full-step-label-1" x="180" y="150" font-size="10" fill="#666" opacity="0">1. DNS 查詢</text>
+                                <text id="full-step-label-2" x="425" y="60" font-size="10" fill="#666" opacity="0">2. 找根</text>
+                                <text id="full-step-label-3" x="567" y="100" font-size="10" fill="#666" opacity="0">3. 找 TLD</text>
+                                <text id="full-step-label-4" x="690" y="155" font-size="10" fill="#666" opacity="0">4. 找權威</text>
+                                <text id="full-step-label-5" x="450" y="250" font-size="10" fill="#666" opacity="0">5. 取得 IP</text>
+                                <text id="full-step-label-6" x="435" y="360" font-size="10" fill="#666" opacity="0">6. 連線</text>
+                                <text id="full-step-label-7" x="435" y="440" font-size="10" fill="#666" opacity="0">7. 網頁</text>
+                                
+                                
+                                <!-- 資料封包動畫 -->
+                                <circle id="packet1" cx="0" cy="0" r="8" fill="#F2E63D" opacity="0">
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="0.5s" begin="packet1.begin" />
+                                </circle>
+                                <circle id="packet2" cx="0" cy="0" r="8" fill="#F24405" opacity="0">
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="0.5s" begin="packet2.begin" />
+                                </circle>
+                                <circle id="packet3" cx="0" cy="0" r="8" fill="#4CAF50" opacity="0">
+                                    <animate attributeName="opacity" values="0;1;1;0" dur="0.5s" begin="packet3.begin" />
+                                </circle>
+                            </svg>
+                        </div>
+                        
+                        <div id="step-description" style="background: white; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid var(--color-fashion4);">
+                            <p>點擊「完整演示」開始觀看整個流程！</p>
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="concept-title">⏱️ 整個過程通常只需要幾毫秒到幾秒鐘</h3>
+                        <p>這個看似簡單的動作，實際上涉及了：</p>
+                        <div class="icon-cluster">
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-search"></i>
+                                <small>DNS 解析</small>
+                            </div>
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-handshake"></i>
+                                <small>連線建立</small>
+                            </div>
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-exchange-alt"></i>
+                                <small>資料傳輸</small>
+                            </div>
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-paint-brush"></i>
+                                <small>頁面渲染</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 7: 安全性考量 -->
+            <div class="slide" id="slide-7">
+                <div class="slide-content">
+                    <h1 class="slide-title">🔒 安全性考量</h1>
+                    
+                    <div class="speech-bubble">
+                        <h3 class="concept-title">☕ 為什麼需要 HTTPS？</h3>
+                        <p>
+                            想像你在咖啡廳使用公共 Wi-Fi 時，如果沒有加密，
+                            你的對話就像在大聲喧嘩，旁邊的人都能聽到。
+                        </p>
+                        <p style="margin-top: 1rem;">
+                            <span class="keyword">HTTPS 就像是為你的對話加上了密碼</span>，
+                            只有你和對方能理解。
+                        </p>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="section-title">
+                            <i class="fas fa-shield-alt"></i>
+                            HTTPS 提供的三重保護
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 2rem 0;">
+                            <div class="hand-drawn-frame" style="padding: 2rem; text-align: center;">
+                                <i class="fas fa-lock fa-3x" style="color: var(--color-fashion4); margin-bottom: 1rem;"></i>
+                                <h4 style="color: var(--color-fashion5);">加密</h4>
+                                <p>防止資料被竊聽</p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 2rem; text-align: center;">
+                                <i class="fas fa-certificate fa-3x" style="color: var(--color-fashion4); margin-bottom: 1rem;"></i>
+                                <h4 style="color: var(--color-fashion5);">驗證</h4>
+                                <p>確認你真的在跟正確的網站通訊</p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 2rem; text-align: center;">
+                                <i class="fas fa-check-circle fa-3x" style="color: var(--color-fashion4); margin-bottom: 1rem;"></i>
+                                <h4 style="color: var(--color-fashion5);">完整性</h4>
+                                <p>確保資料沒有被篡改</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <h3 class="concept-title">⚠️ 常見的 HTTP 安全威脅</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+                            <div>
+                                <h4 style="color: var(--color-fashion4);">
+                                    <i class="fas fa-route"></i> DNS 劫持
+                                </h4>
+                                <p style="font-size: 0.9rem;">
+                                    就像有人把路標改了，讓你走錯路。攻擊者修改 DNS 回應，導向惡意網站。
+                                </p>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--color-fashion4);">
+                                    <i class="fas fa-user-secret"></i> 中間人攻擊
+                                </h4>
+                                <p style="font-size: 0.9rem;">
+                                    就像有人偷聽你的電話對話。攻擊者在你和網站之間攔截通訊。
+                                </p>
+                            </div>
+                            <!-- <div>
+                                <h4 style="color: var(--color-fashion4);">
+                                    <i class="fas fa-code"></i> XSS 攻擊
+                                </h4>
+                                <p style="font-size: 0.9rem;">
+                                    就像有人在你的餐點裡下毒。在網頁中注入惡意程式碼。
+                                </p>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--color-fashion4);">
+                                    <i class="fas fa-database"></i> SQL 注入
+                                </h4>
+                                <p style="font-size: 0.9rem;">
+                                    攻擊者通過輸入欄位執行惡意資料庫指令。
+                                </p>
+                            </div> -->
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="concept-title">🛡️ 防護措施</h3>
+                        <div class="icon-cluster">
+                            <div class="icon-item" style="width: 120px; height: 120px;">
+                                <i class="fas fa-lock"></i>
+                                <small>HTTPS 加密</small>
+                            </div>
+                            <div class="icon-item" style="width: 120px; height: 120px;">
+                                <i class="fas fa-fire"></i>
+                                <small>防火牆</small>
+                            </div>
+                            <div class="icon-item" style="width: 120px; height: 120px;">
+                                <i class="fas fa-sync"></i>
+                                <small>定期更新</small>
+                            </div>
+                            <div class="icon-item" style="width: 120px; height: 120px;">
+                                <i class="fas fa-eye"></i>
+                                <small>監控系統</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 8: 現代技術趨勢 -->
+            <div class="slide" id="slide-8">
+                <div class="slide-content">
+                    <h1 class="slide-title">🚀 現代網路技術趨勢</h1>
+                    
+                    <div class="content-box">
+                        <h3 class="section-title">
+                            <i class="fas fa-tachometer-alt"></i>
+                            HTTP 協定的演進
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 2rem 0;">
+                            <div class="hand-drawn-frame" style="padding: 1.5rem; text-align: center;">
+                                <h4 style="color: var(--color-fashion5);">HTTP/1.1</h4>
+                                <i class="fas fa-road fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                <p style="font-size: 0.9rem;">
+                                    單線道公路<br>
+                                    一次一個請求
+                                </p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 1.5rem; text-align: center;">
+                                <h4 style="color: var(--color-fashion5);">HTTP/2</h4>
+                                <i class="fas fa-road-circle-check fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                <p style="font-size: 0.9rem;">
+                                    多線道高速公路<br>
+                                    多路復用技術
+                                </p>
+                            </div>
+                            
+                            <div class="hand-drawn-frame" style="padding: 1.5rem; text-align: center;">
+                                <h4 style="color: var(--color-fashion5);">HTTP/3</h4>
+                                <i class="fas fa-rocket fa-2x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                                <p style="font-size: 0.9rem;">
+                                    基於 UDP 的 QUIC<br>
+                                    更快的連線建立
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="speech-bubble">
+                        <h3 class="concept-title">🌍 CDN：全球分店概念</h3>
+                        <p>
+                            <span class="keyword">CDN (Content Delivery Network)</span> 
+                            就像在全國各地設立分店：
+                        </p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>把內容複製到世界各地的伺服器</li>
+                            <li>用戶可以從最近的伺服器取得內容</li>
+                            <li>大幅提升載入速度</li>
+                        </ul>
+                    </div>
+
+                    <div class="note-box">
+                        <h3 class="concept-title">☁️ 雲端服務的影響</h3>
+                        <p>現代網站通常不是運行在單一伺服器上，而是：</p>
+                        <div class="icon-cluster">
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-cloud"></i>
+                                <small>分散式架構</small>
+                            </div>
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                                <small>自動擴展</small>
+                            </div>
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-cubes"></i>
+                                <small>微服務架構</small>
+                            </div>
+                            <div class="icon-item" style="width: 100px; height: 100px;">
+                                <i class="fas fa-shield-alt"></i>
+                                <small>高可靠性</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="concept-title">📊 效能提升技術對比</h3>
+                        <div style="margin: 1rem 0;">
+                            <canvas id="performanceChart" style="max-height: 300px;"></canvas>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 1rem; text-align: center;">
+                            <i class="fas fa-info-circle"></i> 數據來源：基於 Google Web Vitals 2023 年報告與 HTTP Archive 的統計資料
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 9: 總結 -->
+            <div class="slide" id="slide-9">
+                <div class="slide-content">
+                    <h1 class="slide-title">🎓 總結與思考</h1>
+                    
+                    <div class="speech-bubble">
+                        <h3 class="concept-title">🎼 網路世界的交響樂</h3>
+                        <p style="text-align: center; font-size: 1.1rem;">
+                            從輸入網址到看見網頁，這個過程就像一場精密的交響樂演出。
+                            每個組件都扮演著重要角色...
+                        </p>
+                    </div>
+
+                    <div class="process-steps">
+                        <div class="process-step">
+                            <i class="fas fa-music fa-3x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                            <h4 style="color: var(--color-fashion5);">DNS</h4>
+                            <p>就像樂團的指揮，協調各個部分</p>
+                        </div>
+                        
+                        <div class="process-step">
+                            <i class="fas fa-file-alt fa-3x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                            <h4 style="color: var(--color-fashion5);">HTTP</h4>
+                            <p>就像樂譜，定義了通訊的規則</p>
+                        </div>
+                        
+                        <div class="process-step">
+                            <i class="fas fa-server fa-3x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                            <h4 style="color: var(--color-fashion5);">Web Server</h4>
+                            <p>就像演奏者，提供實際的內容</p>
+                        </div>
+                        
+                        <div class="process-step">
+                            <i class="fas fa-desktop fa-3x" style="color: var(--color-fashion4); margin: 1rem 0;"></i>
+                            <h4 style="color: var(--color-fashion5);">瀏覽器</h4>
+                            <p>就像音響系統，將結果呈現給用戶</p>
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h3 class="section-title">
+                            <i class="fas fa-lightbulb"></i>
+                            關鍵學習要點
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                            <div class="note-box">
+                                <h4 style="color: var(--color-fashion4);">🔍 深度理解</h4>
+                                <ul style="margin-left: 1rem;">
+                                    <li>網路不是魔法，而是精密工程</li>
+                                    <li>每個步驟都有其存在的理由</li>
+                                    <li>理解原理有助於解決問題</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="note-box">
+                                <h4 style="color: var(--color-fashion4);">🌟 實際應用</h4>
+                                <ul style="margin-left: 1rem;">
+                                    <li>優化網站載入速度</li>
+                                    <li>提升網路安全意識</li>
+                                    <li>為未來學習奠定基礎</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hand-drawn-frame" style="padding: 2rem; text-align: center; background: linear-gradient(45deg, #f8f9fa, #e9ecef);">
+                        <h3 style="color: var(--color-fashion5); margin-bottom: 1rem;">
+                            <i class="fas fa-heart"></i> 感謝參與這場網路之旅！
+                        </h3>
+                        <p style="font-size: 1.1rem;">
+                            當你下次在瀏覽器中輸入網址時，記住這不只是簡單的點擊，
+                            而是一場跨越全球、涉及無數技術和協定的精彩旅程。
+                        </p>
+                        <div style="margin-top: 2rem;">
+                            <span class="keyword">每一次成功的網頁載入，都是人類智慧和技術創新的結晶！</span>
+                        </div>
+                    </div>
+
+                    <div class="icon-cluster" style="margin-top: 2rem;">
+                        <div class="icon-item" style="width: 80px; height: 80px;">
+                            <i class="fas fa-question-circle"></i>
+                            <small>提問</small>
+                        </div>
+                        <div class="icon-item" style="width: 80px; height: 80px;">
+                            <i class="fas fa-comments"></i>
+                            <small>討論</small>
+                        </div>
+                        <div class="icon-item" style="width: 80px; height: 80px;">
+                            <i class="fas fa-book"></i>
+                            <small>延伸學習</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投影片 10: 學習評量 -->
+            <div class="slide" id="slide-10">
+                <div class="slide-content">
+                    <h1 class="slide-title">📝 學習評量</h1>
+                    
+                    <div class="note-box">
+                        <p style="text-align: center; font-size: 1.1rem;">
+                            讓我們透過以下測驗題來檢驗你對網際網路運作原理的理解！
+                        </p>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h3 class="section-title">
+                            <i class="fas fa-check-square"></i>
+                            綜合測驗
+                        </h3>
+                        
+                        <!-- 題目 1 -->
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">1. DNS 的主要功能是什麼？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q1')">A. 儲存網頁內容</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q1')">B. 將域名轉換為 IP 位址</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q1')">C. 加密網路傳輸</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q1')">D. 處理 HTTP 請求</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q1"></div>
+                        </div>
+
+                        <!-- 題目 2 -->
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">2. 全世界的根 DNS 伺服器有幾組？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q2')">A. 5 組</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q2')">B. 10 組</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q2')">C. 13 組</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q2')">D. 20 組</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q2"></div>
+                        </div>
+
+                        <!-- 題目 3 -->
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">3. HTTPS 相比 HTTP 多了什麼功能？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q3')">A. 更快的傳輸速度</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q3')">B. 加密資料傳輸</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q3')">C. 更大的檔案傳輸</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q3')">D. 更簡單的 URL 格式</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q3"></div>
+                        </div>
+
+                        <!-- 題目 4 -->
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">4. HTTP 狀態碼 404 代表什麼意思？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q4')">A. 伺服器錯誤</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q4')">B. 請求成功</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q4')">C. 找不到請求的資源</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q4')">D. 需要身份驗證</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q4"></div>
+                        </div>
+
+                        <!-- 題目 5 -->
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">5. 在 DNS 查詢中，「遞迴查詢」的特點是什麼？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q5')">A. 本地 DNS 伺服器負責查詢所有層級並返回最終結果</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q5')">B. 用戶端自己逐層查詢每個 DNS 伺服器</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q5')">C. 只查詢瀏覽器快取</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q5')">D. 直接連接到權威 DNS 伺服器</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q5"></div>
+                        </div>
+
+                        <!-- 題目 6 -->
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">6. CDN 的主要優點是什麼？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q6')">A. 增加網站安全性</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q6')">B. 讓用戶從最近的伺服器取得內容，提升載入速度</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q6')">C. 減少網站開發成本</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q6')">D. 簡化 URL 結構</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q6"></div>
+                        </div>
+
+                        <!-- 題目 7 -->
+                        <div style="margin-bottom: 2rem;">
+                            <div class="quiz-question">7. 從輸入網址到看見網頁的過程中，哪個步驟通常最先發生？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q7')">A. 建立 TCP 連線</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q7')">B. DNS 解析域名</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q7')">C. 發送 HTTP 請求</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q7')">D. 渲染網頁內容</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q7"></div>
+                        </div>
+
+                        <!-- 題目 8 -->
+                        <div>
+                            <div class="quiz-question">8. HTTP/2 相比 HTTP/1.1 的主要改進是什麼？</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q8')">A. 更安全的加密</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q8')">B. 更簡單的語法</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q8')">C. 支援多路復用，可同時處理多個請求</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q8')">D. 更小的檔案大小限制</div>
+                            </div>
+                            <div class="quiz-feedback" id="feedback-eval-q8"></div>
+                        </div>
+                    </div>
+
+                    <div class="content-box" style="margin-top: 2rem; text-align: center;">
+                        <h3 class="concept-title">🎯 測驗完成！</h3>
+                        <p style="font-size: 1.1rem; margin-top: 1rem;">
+                            恭喜你完成了學習評量！希望透過這些題目，<br>
+                            你對網際網路的運作原理有了更深入的理解。
+                        </p>
+                        <div style="margin-top: 1.5rem;">
+                            <button class="flowchart-btn" onclick="showAllAnswers()" style="background: var(--color-fashion4); color: white; padding: 0.8rem 2rem; font-size: 1rem;">
+                                <i class="fas fa-eye"></i> 顯示所有答案解析
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 導覽按鈕 -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="previousSlide()">
+                <i class="fas fa-chevron-left"></i>
+                上一頁
+            </button>
+            <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                下一頁
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = document.querySelectorAll('.slide').length;
+        let animationStep = 0;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigation();
+            createPerformanceChart();
+            initializeKeyboardNavigation();
+        });
+
+        // 鍵盤導覽
+        function initializeKeyboardNavigation() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    previousSlide();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                }
+            });
+        }
+
+        // 投影片導覽
+        function goToSlide(slideIndex) {
+            if (slideIndex < 0 || slideIndex >= totalSlides) return;
+            
+            // 隱藏當前投影片
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // 顯示目標投影片
+            document.getElementById(`slide-${slideIndex}`).classList.add('active');
+            
+            // 更新側邊欄狀態
+            document.querySelectorAll('.nav-item').forEach((item, index) => {
+                item.classList.toggle('active', index === slideIndex);
+            });
+            
+            currentSlide = slideIndex;
+            updateNavigation();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        // 側邊欄點擊事件
+        document.querySelectorAll('.nav-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                goToSlide(index);
+            });
+        });
+
+        // DNS 動畫
+        function startDNSAnimation() {
+            resetDNSAnimation();
+            
+            const steps = ['step1', 'arrow1', 'step2', 'arrow2', 'step3', 'arrow3', 'step4', 'arrow4', 'step5', 'arrow5', 'step6'];
+            
+            anime.timeline()
+                .add({
+                    targets: steps.map(id => `#${id}`),
+                    opacity: [0, 1],
+                    scale: [0.5, 1],
+                    duration: 600,
+                    delay: anime.stagger(400),
+                    easing: 'easeOutBack'
+                });
+        }
+
+        function resetDNSAnimation() {
+            const steps = ['step1', 'arrow1', 'step2', 'arrow2', 'step3', 'arrow3', 'step4', 'arrow4', 'step5', 'arrow5', 'step6'];
+            
+            anime.set(steps.map(id => `#${id}`), {
+                opacity: 0,
+                scale: 0.5
+            });
+        }
+
+        // 完整流程動畫
+        function startFullAnimation() {
+            resetFullAnimation();
+            animationStep = 0;
+            
+            const steps = [
+                { title: "URL 解析", desc: "瀏覽器解析 https://www.example.com/index.html", icon: "fas fa-link" },
+                { title: "DNS 查詢", desc: "查詢 www.example.com 的 IP 位址", icon: "fas fa-search" },
+                { title: "建立連線", desc: "與伺服器建立 TCP 和 TLS 連線", icon: "fas fa-handshake" },
+                { title: "發送請求", desc: "發送 HTTP GET 請求", icon: "fas fa-paper-plane" },
+                { title: "處理請求", desc: "伺服器處理請求並準備回應", icon: "fas fa-cogs" },
+                { title: "回傳資料", desc: "HTML 內容傳回瀏覽器", icon: "fas fa-download" },
+                { title: "渲染頁面", desc: "瀏覽器解析並顯示網頁", icon: "fas fa-paint-brush" }
+            ];
+            
+            createFullProcessSteps(steps);
+            animateFullProcess(steps);
+        }
+
+        function createFullProcessSteps(steps) {
+            const container = document.getElementById('full-process');
+            container.innerHTML = '';
+            
+            const timeline = document.createElement('div');
+            timeline.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 1rem;';
+            
+            steps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'flow-node';
+                stepElement.id = `full-step-${index}`;
+                stepElement.innerHTML = `<i class="${step.icon}"></i> ${step.title}`;
+                timeline.appendChild(stepElement);
+                
+                if (index < steps.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'flow-arrow';
+                    arrow.id = `full-arrow-${index}`;
+                    arrow.innerHTML = '<i class="fas fa-arrow-down"></i>';
+                    timeline.appendChild(arrow);
+                }
+            });
+            
+            container.appendChild(timeline);
+        }
+
+        function animateFullProcess(steps) {
+            const timeline = anime.timeline();
+            
+            steps.forEach((step, index) => {
+                timeline.add({
+                    targets: `#full-step-${index}`,
+                    opacity: [0, 1],
+                    scale: [0.5, 1],
+                    duration: 600,
+                    easing: 'easeOutBack',
+                    complete: () => {
+                        updateStepDescription(step.desc);
+                    }
+                });
+                
+                if (index < steps.length - 1) {
+                    timeline.add({
+                        targets: `#full-arrow-${index}`,
+                        opacity: [0, 1],
+                        duration: 300
+                    });
+                }
+            });
+        }
+
+        function updateStepDescription(desc) {
+            document.getElementById('step-description').innerHTML = `<p><i class="fas fa-info-circle" style="color: var(--color-fashion4);"></i> ${desc}</p>`;
+        }
+
+        function nextStep() {
+            // 實現手動步驟控制
+            console.log('下一步');
+        }
+
+        function resetFullAnimation() {
+            document.getElementById('full-process').innerHTML = '';
+            document.getElementById('step-description').innerHTML = '<p>點擊「完整演示」開始觀看整個流程！</p>';
+        }
+
+        // 效能圖表
+        function createPerformanceChart() {
+            const ctx = document.getElementById('performanceChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['HTTP/1.1', 'HTTP/2', 'HTTP/3', '+ CDN', '+ 快取'],
+                    datasets: [{
+                        label: '載入時間 (秒)',
+                        data: [3.6, 2.1, 1.5, 0.9, 0.5],
+                        backgroundColor: [
+                            'rgba(89, 60, 71, 0.8)',
+                            'rgba(242, 230, 61, 0.8)',
+                            'rgba(242, 196, 61, 0.8)',
+                            'rgba(242, 91, 5, 0.8)',
+                            'rgba(242, 68, 5, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(89, 60, 71, 1)',
+                            'rgba(242, 230, 61, 1)',
+                            'rgba(242, 196, 61, 1)',
+                            'rgba(242, 91, 5, 1)',
+                            'rgba(242, 68, 5, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: '不同技術的載入速度比較',
+                            font: {
+                                family: 'Yomogi, sans-serif',
+                                size: 16
+                            },
+                            color: '#593C47'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '載入時間 (秒)',
+                                font: {
+                                    family: 'Kaisei Decol, serif'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 響應式側邊欄
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // 添加觸摸支援
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // 向左滑動 - 下一頁
+                    nextSlide();
+                } else {
+                    // 向右滑動 - 上一頁
+                    previousSlide();
+                }
+            }
+        }
+
+        // 頁面可見性變化時重置動畫
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // 頁面變為可見時，可以重啟動畫
+            }
+        });
+
+        // 測驗題答案檢查
+        function checkAnswer(element, result, questionId) {
+            // 先清除該題目所有選項的狀態
+            const options = element.parentNode.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // 設置選中的答案狀態
+            element.classList.add('selected');
+            element.classList.add(result);
+            
+            // 顯示回饋
+            const feedback = document.getElementById(`feedback-${questionId}`);
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.classList.add('show', result);
+            
+            if (result === 'correct') {
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> 正確！答案就是這個。';
+            } else {
+                feedback.innerHTML = '<i class="fas fa-times-circle"></i> 再想想看，這不是正確答案。';
+            }
+        }
+
+        // 顯示所有答案解析
+        function showAllAnswers() {
+            const answerExplanations = {
+                'eval-q1': { correct: 'B', explanation: 'DNS 的主要功能是將人類容易記憶的域名（如 www.google.com）轉換為電腦能理解的 IP 位址。' },
+                'eval-q2': { correct: 'C', explanation: '全世界共有 13 組根 DNS 伺服器，它們是 DNS 系統的最高層級。' },
+                'eval-q3': { correct: 'B', explanation: 'HTTPS 在 HTTP 的基礎上增加了 SSL/TLS 加密層，確保資料傳輸的安全性。' },
+                'eval-q4': { correct: 'C', explanation: 'HTTP 404 狀態碼表示「Not Found」，即找不到請求的資源。' },
+                'eval-q5': { correct: 'A', explanation: '在遞迴查詢中，本地 DNS 伺服器負責完成所有查詢工作，用戶只需等待最終結果。' },
+                'eval-q6': { correct: 'B', explanation: 'CDN 將內容分發到全球各地的伺服器，讓用戶可以從最近的節點取得內容，大幅提升載入速度。' },
+                'eval-q7': { correct: 'B', explanation: '當輸入網址後，瀏覽器首先需要透過 DNS 解析將域名轉換為 IP 位址，才能建立連線。' },
+                'eval-q8': { correct: 'C', explanation: 'HTTP/2 的主要改進是支援多路復用（Multiplexing），可以在同一個連線上同時處理多個請求。' }
+            };
+            
+            // 自動選擇並顯示所有正確答案
+            Object.keys(answerExplanations).forEach(questionId => {
+                const answer = answerExplanations[questionId];
+                const options = document.querySelectorAll(`#feedback-${questionId}`).item(0).parentNode.querySelectorAll('.quiz-option');
+                
+                options.forEach(opt => {
+                    opt.classList.remove('selected', 'incorrect');
+                    if (opt.textContent.startsWith(answer.correct + '.')) {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                const feedback = document.getElementById(`feedback-${questionId}`);
+                feedback.classList.add('show', 'correct');
+                feedback.innerHTML = `<i class="fas fa-lightbulb"></i> <strong>解析：</strong>${answer.explanation}`;
+            });
+        }
+
+        // DNS 訪問流程動畫
+        function startDNSVisitAnimation() {
+            resetDNSVisitAnimation();
+            
+            const timeline = anime.timeline();
+            const stepText = document.getElementById('step-text');
+            const stepDesc = document.getElementById('dns-step-description');
+            
+            // 顯示各個元素並添加路徑動畫
+            timeline
+                .add({
+                    targets: '#path1',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#browser-cache',
+                    opacity: [0, 1],
+                    duration: 500,
+                    begin: function() {
+                        stepText.textContent = '步驟 1：檢查瀏覽器快取';
+                        stepDesc.innerHTML = '<p><i class="fas fa-info-circle"></i> 首先檢查瀏覽器是否已經記住這個網址的 IP</p>';
+                    }
+                })
+                .add({
+                    targets: '#path2',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#system-cache',
+                    opacity: [0, 1],
+                    duration: 500,
+                    begin: function() {
+                        stepText.textContent = '步驟 2：檢查系統快取';
+                        stepDesc.innerHTML = '<p><i class="fas fa-info-circle"></i> 如果瀏覽器沒有記錄，檢查作業系統的 DNS 快取</p>';
+                    }
+                })
+                .add({
+                    targets: '#path3',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#local-dns',
+                    opacity: [0, 1],
+                    duration: 500,
+                    begin: function() {
+                        stepText.textContent = '步驟 3：詢問本地 DNS 伺服器';
+                        stepDesc.innerHTML = '<p><i class="fas fa-info-circle"></i> 向 ISP 提供的本地 DNS 伺服器發送查詢請求</p>';
+                    }
+                })
+                .add({
+                    targets: '#path4',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#root-dns',
+                    opacity: [0, 1],
+                    duration: 500,
+                    begin: function() {
+                        stepText.textContent = '步驟 4：查詢根 DNS 伺服器';
+                        stepDesc.innerHTML = '<p><i class="fas fa-info-circle"></i> 本地 DNS 向根伺服器詢問 .com 域名的管理者</p>';
+                    }
+                })
+                .add({
+                    targets: '#path5',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#tld-dns',
+                    opacity: [0, 1],
+                    duration: 500,
+                    begin: function() {
+                        stepText.textContent = '步驟 5：查詢頂級域名伺服器';
+                        stepDesc.innerHTML = '<p><i class="fas fa-info-circle"></i> 向 .com DNS 伺服器詢問 example.com 的位置</p>';
+                    }
+                })
+                .add({
+                    targets: '#path6',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#auth-dns',
+                    opacity: [0, 1],
+                    duration: 500,
+                    begin: function() {
+                        stepText.textContent = '步驟 6：查詢權威 DNS 伺服器';
+                        stepDesc.innerHTML = '<p><i class="fas fa-info-circle"></i> 終於找到了！權威 DNS 知道確切的 IP 位址</p>';
+                    }
+                })
+                .add({
+                    targets: '#path-return',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#result',
+                    opacity: [0, 1],
+                    scale: [0.8, 1],
+                    duration: 500,
+                    easing: 'easeOutBack',
+                    begin: function() {
+                        stepText.textContent = '完成！取得 IP 位址';
+                        stepDesc.innerHTML = '<p><i class="fas fa-check-circle" style="color: #4CAF50;"></i> 成功取得 IP 位址，現在可以連接到網站了！</p>';
+                    }
+                });
+        }
+
+        function stepDNSAnimation() {
+            // 逐步演示功能可以擴展實現
+            console.log('逐步演示 DNS 查詢');
+        }
+
+        function resetDNSVisitAnimation() {
+            const elements = ['#browser-cache', '#system-cache', '#local-dns', '#root-dns', 
+                            '#tld-dns', '#auth-dns', '#result', '#path1', '#path2', '#path3', 
+                            '#path4', '#path5', '#path6', '#path-return'];
+            
+            anime.set(elements, {
+                opacity: 0
+            });
+            
+            document.getElementById('step-text').textContent = '';
+            document.getElementById('dns-step-description').innerHTML = '<p>點擊「開始訪問流程」查看 DNS 解析的完整過程！</p>';
+        }
+
+        // 完整流程路徑動畫
+        function startFullAnimation() {
+            resetFullAnimation();
+            
+            const timeline = anime.timeline();
+            
+            // 顯示所有組件
+            timeline
+                .add({
+                    targets: '#local-dns-full',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#path-to-local-dns',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#full-step-label-1',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#root-dns-full',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#path-to-root',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#full-step-label-2',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#tld-dns-full',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#path-to-tld',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#full-step-label-3',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#auth-dns-full',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#path-to-auth',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#full-step-label-4',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#path-dns-return',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#full-step-label-5',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#web-server',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#path-to-server',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#full-step-label-6',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+                .add({
+                    targets: '#path-server-return',
+                    opacity: [0, 1],
+                    duration: 500
+                })
+                .add({
+                    targets: '#full-step-label-7',
+                    opacity: [0, 1],
+                    duration: 300
+                })
+            
+            document.getElementById('step-description').innerHTML = '<p><i class="fas fa-check-circle" style="color: #4CAF50;"></i> 完整流程演示完成！從 DNS 查詢到網頁顯示的整個過程。</p>';
+        }
+
+        function resetFullAnimation() {
+            const elements = ['#local-dns-full', '#root-dns-full', '#tld-dns-full', '#auth-dns-full', 
+                            '#web-server', '#step-labels', '#path-to-local-dns', '#path-to-root', 
+                            '#path-to-tld', '#path-to-auth', '#path-dns-return', '#path-to-server', 
+                            '#path-server-return'];
+            
+            anime.set(elements, {
+                opacity: 0
+            });
+            
+            document.getElementById('step-description').innerHTML = '<p>點擊「完整演示」開始觀看整個流程！</p>';
+        }
+    </script>
+</body>
+</html>
