@@ -1276,7 +1276,7 @@
                                     <text x="95" y="80" text-anchor="middle" font-size="8" fill="#666">3. 返回結果</text>
                                     
                                     <rect x="20" y="200" width="260" height="40" rx="5" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2" />
-                                    <text x="150" y="215" text-anchor="middle" font-size="10" fill="#2E7D32">本地 DNS 負責所有查詢工作</text>
+                                    <text x="150" y="215" text-anchor="middle" font-size="10" fill="#2E7D32">由 DNS（通常指 Local DNS）全權負責所有查詢工作</text>
                                     <text x="150" y="230" text-anchor="middle" font-size="10" fill="#2E7D32">用戶只需等待最終結果</text>
                                     
                                     <!-- 箭頭定義 -->
@@ -1330,8 +1330,8 @@
                                     <text x="95" y="160" font-size="8" transform="rotate(30, 95, 160)" fill="#666">IP 位址</text>
                                     
                                     <rect x="20" y="200" width="260" height="40" rx="5" fill="#FFF3E0" stroke="#F57C00" stroke-width="2" />
-                                    <text x="150" y="215" text-anchor="middle" font-size="10" fill="#E65100">本地 DNS 逐步詢問每一層</text>
-                                    <text x="150" y="230" text-anchor="middle" font-size="10" fill="#E65100">每層只告訴下一步該找誰</text>
+                                    <text x="150" y="215" text-anchor="middle" font-size="10" fill="#E65100">查詢者（通常是 Local DNS）逐步詢問每一層</text>
+                                    <text x="150" y="230" text-anchor="middle" font-size="10" fill="#E65100">每層只告訴查詢者下一步該找誰</text>
                                     
                                     <!-- 箭頭定義 -->
                                     <defs>
@@ -1982,7 +1982,7 @@
                         <div style="margin-bottom: 2rem;">
                             <div class="quiz-question">5. 在 DNS 查詢中，「遞迴查詢」的特點是什麼？</div>
                             <div class="quiz-options">
-                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q5')">A. 本地 DNS 伺服器負責查詢所有層級並返回最終結果</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 'eval-q5')">A. 本地 DNS 伺服器全權負責查詢所有層級並返回最終結果</div>
                                 <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q5')">B. 用戶端自己逐層查詢每個 DNS 伺服器</div>
                                 <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q5')">C. 只查詢瀏覽器快取</div>
                                 <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 'eval-q5')">D. 直接連接到權威 DNS 伺服器</div>
@@ -2373,7 +2373,7 @@
                 'eval-q2': { correct: 'C', explanation: '全世界共有 13 組根 DNS 伺服器，它們是 DNS 系統的最高層級。' },
                 'eval-q3': { correct: 'B', explanation: 'HTTPS 在 HTTP 的基礎上增加了 SSL/TLS 加密層，確保資料傳輸的安全性。' },
                 'eval-q4': { correct: 'C', explanation: 'HTTP 404 狀態碼表示「Not Found」，即找不到請求的資源。' },
-                'eval-q5': { correct: 'A', explanation: '在遞迴查詢中，本地 DNS 伺服器負責完成所有查詢工作，用戶只需等待最終結果。' },
+                'eval-q5': { correct: 'A', explanation: '在遞迴查詢中，由 DNS Server 全權代表 User 負責完成所有查詢工作，User 只需等待最終結果。跟迭代查詢的不同就在於「全權代表」，意思是 User 不用負責任何的搜尋責任。因此在現代的 DNS 查詢中，User 到 local DNS 通常是遞迴查詢，而 local DNS 跟其他 DNS 之間，為了降低各 DNS 的壓力，則會使用迭代查詢的方式。更詳細內容可以參考<a href="https://www.cloudflare.com/learning/dns/what-is-recursive-dns/" target="_blank">Cloudflare Learning: What is recursive DNS?</a>' },
                 'eval-q6': { correct: 'B', explanation: 'CDN 將內容分發到全球各地的伺服器，讓用戶可以從最近的節點取得內容，大幅提升載入速度。' },
                 'eval-q7': { correct: 'B', explanation: '當輸入網址後，瀏覽器首先需要透過 DNS 解析將域名轉換為 IP 位址，才能建立連線。' },
                 'eval-q8': { correct: 'C', explanation: 'HTTP/2 的主要改進是支援多路復用（Multiplexing），可以在同一個連線上同時處理多個請求。' }
