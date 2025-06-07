@@ -1,58 +1,90 @@
 # 提示詞工程 (Prompt Engineer) 專案
 
-## 概述
-本專案是一個提示詞（Prompt）資源庫，旨在收集、整理並提供各類型的提示詞，方便使用者快速取用以生成視覺化內容、文章或其他專業設計需求的內容。無論您需要製作投影片、資訊圖表還是其他形式的視覺化呈現，本資源庫將持續更新，成為您創作過程中的得力助手。
+> [!NOTE]  
+> **作者**：CXPhoenix
+> 
+> **參考資料**：
+> - Pikalai (https://hackmd.io/@pikalai/rymtrelTJe) [![PikaLai Hackmd](https://img.shields.io/badge/hackmd-Pika_Lai_Hackmd-8A2BE2?logo=Markdown&label=hackmd)](https://hackmd.io/@pikalai/HkvaVkWp1g)
+> - Sunwood-ai-labs (https://github.com/Sunwood-ai-labs/MysticLibrary) [![Sunwook-ai-labs Index Page](https://img.shields.io/badge/github-Sunwood--ai--labs-blue?style=plastic&logo=github&logoColor=white&labelColor=black)](https://github.com/Sunwood-ai-labs)
 
-## 目標
-透過精心設計的提示詞，協助使用者快速生成具有專業視覺效果和資訊傳達價值的內容。所有提示詞皆以繁體中文撰寫，符合台灣慣用語境，並追求設計與實用性的最高標準。
+## 簡介
+本專案是一個全面的提示詞 (Prompt) 資源庫，專為使用者提供高品質的提示詞模板，用於生成視覺化內容、文章、投影片、資訊圖表及其他專業設計需求。透過本資源庫，您可以輕鬆存取並自訂提示詞，加速創作流程，提升產出品質。所有內容皆以台灣慣用繁體中文用語撰寫，確保語言自然流暢，並符合本地文化與專業標準。
 
-## 目前可用的提示詞
-以下是目前本資源庫中可用的提示詞類型，點擊連結可快速查看詳細內容：
+本專案旨在成為開發者、設計師和內容創作者的實用工具，持續更新以涵蓋更多應用場景。如果您是新手，我們的提示詞設計注重易用性；如果您是專業人士，我們提供進階的自訂選項。 ![尚在開發中](https://img.shields.io/badge/%E8%87%AA%E5%AE%9A%E7%BE%A9%E5%85%A7%E5%AE%B9%E9%96%8B%E7%99%BC%E4%B8%AD-(%E4%BD%86%E4%B8%8D%E7%9F%A5%E9%81%93%E4%BB%80%E9%BA%BC%E6%99%82%E5%80%99%E6%9C%83%E5%AE%8C%E6%88%90)-gray?style=flat&labelColor=red)
 
-### 投影片
-- **[圖像紀錄風格投影片](slides_prompts/graphics-record-slides-v01.md)**：用於將內容轉換成圖像紀錄風格的 HTML 資訊圖表，運用手繪風格圖形和圖示，視覺化呈現專業知識。
-- **[圖像紀錄風格投影片 - 版本2](slides_prompts/graphics-record-slides-v02.md)**：用於將內容轉換成圖像紀錄風格的 HTML 資訊圖表（第二版），運用手繪風格圖形和圖示，視覺化呈現專業知識。
-
-### 資訊圖表
-- **[資訊圖表縮圖](infomation_graphics/information-graphics-thumbnil-v01.md)**：用於生成高品質部落格文章縮圖，尺寸為 16:9 比例，包含視覺精緻的資訊圖表元素。
-- **[圖像紀錄風格資訊圖表](infomation_graphics/graphics-recording-style-infograph-v01.md)**：用於生成圖像紀錄風格的資訊圖表，適合用於視覺化呈現複雜資訊。
-- **[圖像紀錄風格資訊圖表動畫](infomation_graphics/graphic-recording-style-infograph-anim-v01.md)**：用於生成具有動畫效果的圖像紀錄風格資訊圖表，增加視覺吸引力。
-
-### 書籍
-- **[A4 書籍生成提示詞 - Alpha 版](book/a4-book-generate-alpha.md)**：**(尚在測試階段)**用於生成 A4 尺寸的書籍內容，適合用於教育或專業出版物。
-
-### 專案管理
-- **[專案規劃助理提示詞 - 繁體中文版 v01](project/project_plan_assistant_zhTW-v01.md)**：用於協助產生專案規劃相關內容的提示詞。
-
-### 深度研究
-- **[深度研究提示詞生成器 - 繁體中文版 v01](deep_research/deep_research_prompt_generator_zhTW-v01.md)**：用於生成深度研究的提示詞，針對繁體中文使用者。
-- **[深度研究提示詞生成器 - 繁體中文版 v02](deep_research/deep_research_prompt_generator_zhTW-v02.md)**：用於生成深度研究的提示詞，針對繁體中文使用者（更新版本）。
-- **[深度研究提示詞生成器 - 英文版 v01](deep_research/deep_research_prompt_generator_en-v01.md)**：用於生成深度研究的提示詞，針對英文使用者。
-
-### 程式碼開發
-- **[Reflex 應用程式與 Beanie 和 Google OAuth 結構規則 - 版本 1](vibe_coding/reflex_app_and_beanie_and_google_oauth_structure_rules-v01.md)**：用於生成 Reflex 應用程式的結構，包含 Beanie 資料庫整合和 Google OAuth 認證功能。
-
-### 網站
-
-#### 行銷網站
-- **[行銷網站提示詞 - Alpha 版本](website/marketing-website-alpha.md)**：用於生成行銷網站的內容，專注於產品或服務推廣。
-- **[行銷網站提示詞 - Beta 版本](website/marketing-website-beta.md)**：用於生成行銷網站的內容，包含更多互動元素和視覺設計。
-
-#### 教育招生網站
-- **[教育招生網站提示詞 - 版本 1](website/educational-student-recruit-website-v1.md)**：用於生成教育機構的招生網站內容，包含招生資訊和課程介紹。
-- **[教育招生網站提示詞 - 版本 2](website/educational-student-recruit-website-v2.md)**：用於生成教育機構的招生網站內容，包含更詳細的課程和活動資訊。
-- **[教育招生網站提示詞 - 版本 3a](website/educational-student-recruit-website-v3a.md)**：用於生成教育機構的招生網站內容，針對特定目標群體的設計。
-- **[教育招生網站提示詞 - 版本 3b](website/educational-student-recruit-website-v3b.md)**：用於生成教育機構的招生網站內容，另一種針對特定目標群體的設計。
-
-#### 教育知識展示網站
-- **[教育知識展示網站提示詞 - 版本 1](website/educational-website-for-knowledges-display-v01.md)**：用於生成教育知識展示網站的內容，專注於知識分享和學習資源的呈現。
+## 主要特點
+- **多樣化提示詞類型**：涵蓋投影片、資訊圖表、書籍生成、專案管理、深度研究及網站設計等多個領域。
+- **繁體中文優化**：所有提示詞均使用台灣慣用語彙和表達方式，讓使用者無須額外翻譯即可應用。
+- **易於擴充**：資源庫結構化設計，便於貢獻者新增或修改提示詞。
+- **專業視覺效果**：提示詞整合了視覺設計原則，如手繪風格、動畫元素和高解析度圖表，協助產生吸引人的輸出。
 
 ## 如何使用
-您可以直接點擊上述連結查看各提示詞的詳細設計規格和使用說明，根據需求複製或調整提示詞內容，應用於您的創作工具或生成平台。
+1. **瀏覽提示詞**：查看以下目錄中的檔案，選擇適合的提示詞模板。
+2. **自訂提示詞**：複製模板並根據需求調整參數，例如變更風格、尺寸或內容細節。
+3. **整合工具**：將提示詞應用於 AI 生成平台（如 ChatGPT 或 Midjourney），快速產生內容。
+4. **測試與迭代**：生成後，檢查輸出是否符合預期，並根據需要微調提示詞。
+
+例如，若您要生成一張資訊圖表，請參考 `infomation_graphics/graphics-recording-style-infograph-v01.md`，並將其整合到您的生成流程中。
+
+## 目前可用提示詞
+本資源庫已整理多種提示詞類型，詳細列表如下。您可以點擊連結查看完整規格：
+
+### 投影片
+- [圖像紀錄風格投影片 v01](slides_prompts/graphics-record-slides-v01.md)：轉換內容為手繪風格 HTML 投影片，適合專業簡報。
+- [圖像紀錄風格投影片 v02](slides_prompts/graphics-record-slides-v02.md)：更新版本，新增互動元素。
+
+### 資訊圖表
+- [資訊圖表縮圖 v01](infomation_graphics/information-graphics-thumbnil-v01.md)：生成 16:9 比例的高品質縮圖。
+- [圖像紀錄風格資訊圖表 v01](infomation_graphics/graphics-recording-style-infograph-v01.md)：視覺化複雜資訊。
+- [圖像紀錄風格資訊圖表動畫 v01](infomation_graphics/graphic-recording-style-infograph-anim-v01.md)：加入動畫效果的版本。
+
+### 書籍
+- [A4 書籍生成提示詞 - Alpha 版](book/a4-book-generate-alpha.md)：用於教育或專業出版物（測試中）。
+
+### 專案管理
+- [專案規劃助理提示詞 v01](project/project_plan_assistant_zhTW-v01.md)：協助產生專案規劃文件。
+
+### 深度研究
+- [深度研究提示詞生成器 v01 (繁體中文)](deep_research/deep_research_prompt_generator_zhTW-v01.md)。
+- [深度研究提示詞生成器 v02 (繁體中文)](deep_research/deep_research_prompt_generator_zhTW-v02.md)。
+- [深度研究提示詞生成器 v01 (英文)](deep_research/deep_research_prompt_generator_en-v01.md)。
+
+### 程式碼開發
+- [Reflex 應用程式結構規則 v01](vibe_coding/reflex_app_and_beanie_and_google_oauth_structure_rules-v01.md)：包含 Beanie 資料庫和 Google OAuth 整合。
+
+### 網站
+- **行銷網站**：
+  - [Alpha 版本](website/marketing-website-alpha.md)：視覺吸引的一頁式響應式網站，使用專業藍和活力橙金色彩配置，提供無障礙設計 (WCAG 2.1 AA)，強調行銷效果與互動體驗，包括英雄區塊、產品特色展示和行動號召按鈕。
+  - [Beta 版本](website/marketing-website-beta.md)：視覺吸引的一頁式響應式網站，強化互動元素，提供無障礙設計 (WCAG 2.1 AA)，聚焦於行銷轉換率，包括動畫效果和顧客見證區塊。
+- **教育招生網站**：
+  - [版本 1](website/educational-student-recruit-website-v1.md)：基本版本，整合 Tailwind CSS 和暗黑模式，提供無障礙設計 (WCAG 2.1 AA)，強調招生效果。
+  - [版本 2](website/educational-student-recruit-website-v2.md)：增強互動性，包含動畫效果和更豐富的互動元素。
+  - [版本 3a](website/educational-student-recruit-website-v3a.md)：採用清新活力方案色彩，強調現代 UI/UX 設計。
+  - [版本 3b](website/educational-student-recruit-website-v3b.md)：使用專業精緻方案色彩，聚焦教育價值和精緻互動體驗。
+- **教育知識展示網站**：
+  - [版本 1](website/educational-website-for-knowledges-display-v01.md)：視覺吸引的教育知識展示網站，支援響應式設計和無障礙標準 (WCAG 2.1 AA)，聚焦於知識分享與學習資源呈現。
+
+## 安裝與設定
+本專案無需特殊安裝。您可以直接克隆儲存庫並瀏覽檔案：
+```
+git clone https://github.com/cxphoenix/prompt-engineer.git
+cd prompt-engineer
+```
+如果您要測試提示詞，請確保有 AI 生成工具（如 OpenAI API）設定好。
+
+## 貢獻指南
+我們歡迎社區貢獻！若您想新增提示詞或改進現有內容，請遵循以下步驟：
+1. Fork 本儲存庫。
+2. 建立新分支並進行修改。
+3. 提交 Pull Request，並在描述中說明變更細節。
+4. 我們將審核並合併您的貢獻。
 
 ## 未來規劃
-本資源庫將持續擴充，加入更多類型的提示詞，涵蓋不同領域和應用場景。如果您有特定的提示詞需求或建議，歡迎提出以協助我們改進。
+- 擴充更多提示詞類型，例如影片生成和互動式應用。
+- 加入使用者回饋機制，讓社區能參與優化。
+- 開發自動化工具，簡化提示詞應用流程。
 
-## 參考資料
-- 圖像紀錄風格投影片：參考自 [Pikalai](https://hackmd.io/@pikalai/rymtrelTJe)
-- 資訊圖表縮圖：參考自 [@Sunwood-ai-labs](https://github.com/Sunwood-ai-labs/MysticLibrary)
+## 授權
+本專案採用 MIT 授權。詳細資訊請參閱 LICENSE 檔案（若適用）。
+
+感謝您使用本資源庫！如果有任何問題，請在 Issues 頁面提出。
