@@ -52,10 +52,13 @@
 
 ### **4. 投影片設計元素**
 * **字體風格**：  
-  * **中文手寫風格字體**：優先使用 `@import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol&family=Yomogi&family=Zen+Kurenaido&display=swap')`; 中定義的字體。  
+  * **中文手寫風格字體**：優先使用 `@import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&family=Yomogi&family=Zen+Kurenaido&display=swap');`; 中定義的字體。  
     * Yomogi 或 Zen Kurenaido 可用於標題和重點文字，營造手寫感。  
     * Kaisei Decol 可用於內文，兼顧手寫風格與可讀性。  
-  * 若上述字體效果不佳或字元不全，可考慮使用「思源宋體 (Noto Serif TC)」、「思源黑體 (Noto Sans TC)」作為備選，並透過 CSS 調整字重和樣式以貼近手寫感。  
+  * 若上述字體效果不佳或字元不全，可考慮使用「思源黑體 (Noto Sans TC)」、「思源宋體 (Noto Serif TC)」作為備選，並透過 CSS 調整字重和樣式以貼近手寫感。  
+    * Noto Sans TC 的 url 為 `https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap`
+    * Noto Serif TC 的 url 為 `https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap`
+    * 若有需要兩者皆引用，可以使用的 url 為 `https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap`
 * **手繪風格圖形**：  
   * **邊框**：內容區塊、圖片、引用文等可使用手繪風格邊框（例如：不完全平直的線條、雙線、虛線、略帶陰影的邊框）。  
   * **箭頭**：用於指示流程、關聯性，應為手繪樣式（例如：箭頭兩側寬度不均、線條略帶彎曲）。  
@@ -108,7 +111,7 @@
 * **字體引入**：  
 ```html
 <style>  
-  @import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol&family=Yomogi&family=Zen+Kurenaido&display=swap');  
+  @import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&family=Yomogi&family=Zen+Kurenaido&display=swap'); 
   body {  
       font-family: 'Kaisei Decol', 'Yomogi', 'Zen Kurenaido', serif; /* 優先使用手寫體 */  
   }  
