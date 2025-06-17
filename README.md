@@ -38,6 +38,9 @@
 - [圖像紀錄風格資訊圖表 v01](infomation_graphics/graphics-recording-style-infograph-v01.md)：視覺化複雜資訊。
 - [圖像紀錄風格資訊圖表動畫 v01](infomation_graphics/graphic-recording-style-infograph-anim-v01.md)：加入動畫效果的版本。
 
+### 文章
+- [類似人類撰寫的文章 v01](article/article-like-human-v1.md)：生成自然流暢的文章內容。
+
 ### 書籍
 - [A4 書籍生成提示詞 - Alpha 版](book/a4-book-generate-alpha.md)：用於教育或專業出版物（測試中）。
 
@@ -48,6 +51,9 @@
 - [深度研究提示詞生成器 v01 (繁體中文)](deep_research/deep_research_prompt_generator_zhTW-v01.md)。
 - [深度研究提示詞生成器 v02 (繁體中文)](deep_research/deep_research_prompt_generator_zhTW-v02.md)。
 - [深度研究提示詞生成器 v01 (英文)](deep_research/deep_research_prompt_generator_en-v01.md)。
+
+### 字幕提取
+- [字幕提取 for Google AI Studio v01](subtitle-extract/subtitle-extract-for-google-ai-studio-v1.md)：用於從影片或音頻中提取字幕。
 
 ### 程式碼開發
 - [Reflex 應用程式結構規則 v01](vibe_coding/reflex_app_and_beanie_and_google_oauth_structure_rules-v01.md)：包含 Beanie 資料庫和 Google OAuth 整合。
