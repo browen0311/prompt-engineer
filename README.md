@@ -32,6 +32,7 @@
 ### 投影片
 - [圖像紀錄風格投影片 v01](slides_prompts/graphics-record-slides-v01.md)：轉換內容為手繪風格 HTML 投影片，適合專業簡報。
 - [圖像紀錄風格投影片 v02](slides_prompts/graphics-record-slides-v02.md)：更新版本，新增互動元素。
+- [ISIP 主題投影片 v1](slides_prompts/isip-theme-slides-v1.md)：以 ISIP 主題設計的投影片，適合特定品牌或活動使用。
 
 ### 資訊圖表
 - [資訊圖表縮圖 v01](infomation_graphics/information-graphics-thumbnil-v01.md)：生成 16:9 比例的高品質縮圖。
