@@ -55,7 +55,6 @@
   --font-family-default: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   --text-color-main: #333;
   --text-color-highlight: #d12;
-  --text-color-light: #f9fafb; /* 用於深色背景的文字 */
 }
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
 
@@ -252,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ## **4. 最終藍圖：應用程式實例化**
 
-現在，使用上述完整的系統，在 `#presentation-app` 容器內生成與您版本**完全一致**的 HTML 結構，包含所有 9 張投影片的 `id`、`class`、圖片和文字內容。
+現在，使用上述完整的系統，在 `#presentation-app` 容器內生成與您版本**完全一致**的 HTML 結構，包含所有的 `id`、`class`、圖片和文字內容。
 
 ```html
 <!-- Slide 1: "Cover" Layout -->
