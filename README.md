@@ -58,6 +58,7 @@
 
 ### 程式碼開發
 - [Reflex 應用程式結構規則 v01](vibe_coding/reflex_app_and_beanie_and_google_oauth_structure_rules-v01.md)：包含 Beanie 資料庫和 Google OAuth 整合。
+- [Claude code 規則 v01](vibe_coding/cluade_code_instruction-v01.md): 讓 Claude code 去利用 Gemini cli 去讀取檔案並建立 insight。
 
 ### 網站
 - **行銷網站**：
