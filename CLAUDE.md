@@ -67,18 +67,6 @@ The prompts are designed with these principles:
 - **Responsive design**: Mobile-first approach with RWD principles
 - **Accessibility**: WCAG compliance considerations
 
-## Special Features
-
-### Advanced Slide Generation
-The `slides_prompts/graphics-record-slides-v03.md` implements a sophisticated data-driven approach:
-- JSON-structured input data
-- Separation of content from presentation
-- Dynamic flow chart generation with anime.js
-- Progressive disclosure with auto-play and manual modes
-
-### Large Codebase Analysis
-The `vibe_coding/cluade_code_instruction-v01.md` provides guidance for analyzing large codebases using Gemini CLI with `@` syntax for file inclusion.
-
 ## Contributing Guidelines
 
 When modifying prompts:
