@@ -1,47 +1,55 @@
-# Gemini CLI Agent Rules - 圖像紀錄風格投影片生成
+# Gemini CLI Agent Rules - Hand-drawn Style Slide Generation
 
-## 基本設置與行為模式
+## CRITICAL: Language Output Requirements
+- **ALL SLIDE CONTENT MUST BE IN TRADITIONAL CHINESE (TAIWAN) - NO EXCEPTIONS**
+- **Use Taiwan punctuation conventions and terminology exclusively**
+- **NEVER use Simplified Chinese or English in slide content**
+- **ALL text, titles, descriptions, UI elements, comments, and code comments must use Taiwan Traditional Chinese**
+- **Even technical terms should use Taiwan-localized versions when available**
+- **Button labels, navigation text, and all interactive elements must be in Traditional Chinese**
 
-### 語言設定
-- **主要語言**：繁體中文（台灣）
-- **標點符號**：使用台灣慣用標點符號
-- **專業術語**：優先使用台灣地區通用的技術詞彙
+## Basic Settings & Behavior Patterns
 
-### 輸出行為
-- **完整性要求**：必須生成完整的 HTML 檔案，包含所有必要的 CSS 和 JavaScript
-- **單一檔案**：所有程式碼應整合在一個 HTML 檔案中，避免外部依賴
-- **即時可用**：生成的檔案應能直接在瀏覽器中開啟並正常運作
+### Language Configuration
+- **Primary Output Language**: Traditional Chinese (Taiwan) - MANDATORY
+- **Punctuation**: Taiwan standard punctuation conventions
+- **Technical Terms**: Use Taiwan-localized technical terminology
 
-### 檔案命名規則
-- 檔案名稱格式：`slides-[主題]-[日期].html`
-- 範例：`slides-project-workflow-20240703.html`
-- 檔案編碼：UTF-8
+### Output Behavior
+- **Completeness Requirement**: Must generate complete HTML files with all necessary CSS and JavaScript
+- **Single File**: All code should be integrated into one HTML file to avoid external dependencies
+- **Ready to Use**: Generated files should open directly in browsers and function properly
 
-## 資料驅動架構規則
+### File Naming Convention
+- File name format: `slides-[topic]-[date].html`
+- Example: `slides-project-workflow-20240703.html`
+- File encoding: UTF-8
 
-### 強制工作流程
-1. **資料定義階段**：
-   - 必須先向使用者確認或生成 JSON 結構化資料
-   - 資料應包含：`title`, `nodes`, `connectors`
-   - 驗證資料完整性和邏輯正確性
+## Data-Driven Architecture Rules
 
-2. **視覺化渲染階段**：
-   - 基於 JSON 資料生成對應的 SVG 元素
-   - 遵循預定義的設計規範
-   - 確保響應式佈局
+### Mandatory Workflow
+1. **Data Definition Phase**:
+   - Must first confirm with user or generate structured JSON data
+   - Data should include: `title`, `nodes`, `connectors`
+   - Validate data completeness and logical correctness
 
-3. **互動功能階段**：
-   - 實現自動播放和手動控制
-   - 綁定鍵盤導覽功能
-   - 添加使用者介面控制項
+2. **Visualization Rendering Phase**:
+   - Generate corresponding SVG elements based on JSON data
+   - Follow predefined design specifications
+   - Ensure responsive layout
 
-### JSON 資料結構規範
+3. **Interactive Features Phase**:
+   - Implement auto-play and manual control
+   - Bind keyboard navigation functionality
+   - Add user interface controls
+
+### JSON Data Structure Specification
 ```json
 {
   "title": "流程圖標題",
   "nodes": [
     {
-      "id": "唯一標識符",
+      "id": "專屬識別碼",
       "content": "節點顯示文字",
       "notes": "詳細說明",
       "position": { "x": 100, "y": 50 }
@@ -49,7 +57,7 @@
   ],
   "connectors": [
     {
-      "id": "連接線標識符",
+      "id": "連接線專屬識別碼",
       "from": "起點節點ID",
       "to": "終點節點ID"
     }
@@ -72,18 +80,18 @@
 }
 ```
 
-### 版面結構要求
-- **雙欄佈局**：左側導覽欄（20-25%）+ 右側內容區（75-80%）
-- **響應式斷點**：768px 以下使用折疊式導覽
-- **固定定位**：側邊欄固定，內容區可滾動
+### Layout Structure Requirements
+- **Dual-column Layout**: Left sidebar (20-25%) + Right content area (75-80%)
+- **Responsive Breakpoint**: Use collapsible navigation below 768px
+- **Fixed Positioning**: Sidebar fixed, content area scrollable
 
-### 字體風格規範
+### Typography Specifications
 ```css
-/* 必須引入的字體 */
+/* Required font imports */
 @import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&family=Yomogi&family=Zen+Kurenaido&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap');
 
-/* 字體優先序 */
+/* Font priority order */
 body {
   font-family: 'Kaisei Decol', 'Noto Sans TC', sans-serif;
 }
@@ -93,27 +101,27 @@ h1, h2, h3 {
 }
 ```
 
-## 技術整合規範
+## Technical Integration Standards
 
-### 必要庫文件引用
+### Required Library Imports
 ```html
-<!-- 動畫庫 -->
+<!-- Animation libraries -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
-<!-- 圖表庫 -->
+<!-- Chart library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- 圖示庫 -->
+<!-- Icon library -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 ```
 
-### 三階段實作架構
-1. **靜態渲染函數**：`renderFlowchart(data)`
-2. **動畫時間軸**：`anime.timeline()` 配置
-3. **互動控制**：播放/暫停/重置/下一步按鈕
+### Three-Stage Implementation Architecture
+1. **Static Rendering Function**: `renderFlowchart(data)`
+2. **Animation Timeline**: `anime.timeline()` configuration
+3. **Interactive Controls**: Play/Pause/Reset/Next step buttons
 
-### SVG 手繪風格模板
+### SVG Hand-drawn Style Templates
 ```html
 <svg width="0" height="0" style="position:absolute;pointer-events:none;">
   <defs>
@@ -130,57 +138,60 @@ h1, h2, h3 {
 </svg>
 ```
 
-## 品質控制標準
+## Quality Control Standards
 
-### 程式碼品質要求
-- **語法正確性**：HTML5 標準，CSS3 語法，ES6+ JavaScript
-- **跨瀏覽器兼容**：支援 Chrome, Firefox, Safari, Edge
-- **效能最佳化**：圖片壓縮，CSS/JS 最小化，載入時間 < 3 秒
-- **無障礙設計**：符合 WCAG 2.1 AA 標準
+### Code Quality Requirements
+- **Syntax Correctness**: HTML5 standards, CSS3 syntax, ES6+ JavaScript
+- **Cross-browser Compatibility**: Support Chrome, Firefox, Safari, Edge
+- **Performance Optimization**: Image compression, CSS/JS minification, load time < 3 seconds
+- **Accessibility Design**: Comply with WCAG 2.1 AA standards
 
-### 功能完整性檢查
-- [ ] 投影片可正常切換
-- [ ] 動畫效果正常運作
-- [ ] 鍵盤導覽功能正常
-- [ ] 響應式佈局正確
-- [ ] 所有互動按鈕可用
-- [ ] 流程圖動畫完整
+### Functional Completeness Checklist
+- [ ] Slides can switch properly
+- [ ] Animation effects work correctly
+- [ ] Keyboard navigation functions properly
+- [ ] Responsive layout is correct
+- [ ] All interactive buttons are functional
+- [ ] Flowchart animations are complete
+- [ ] **ALL content is in Traditional Chinese (Taiwan)**
+- [ ] **NO English or Simplified Chinese text present**
+- [ ] **Taiwan punctuation and terminology used throughout**
 
-### 內容品質標準
-- **視覺一致性**：所有元素符合手繪風格
-- **資訊層次**：清晰的視覺層次結構
-- **可讀性**：文字對比度 > 4.5:1
-- **美觀度**：色彩搭配和諧，版面平衡
+### Content Quality Standards
+- **Visual Consistency**: All elements conform to hand-drawn style
+- **Information Hierarchy**: Clear visual hierarchy structure
+- **Readability**: Text contrast ratio > 4.5:1
+- **Aesthetics**: Harmonious color combinations, balanced layout
 
-## 使用情境指引
+## Usage Scenario Guidelines
 
-### 教育培訓投影片
-- 重點：概念解釋、步驟流程、案例分析
-- 建議：多使用圖示、對話框、關鍵字高亮
+### Educational Training Slides
+- Focus: Concept explanation, step-by-step processes, case studies
+- Recommendations: Use icons, dialog boxes, keyword highlighting
 
-### 會議簡報
-- 重點：數據視覺化、決策流程、行動方案
-- 建議：整合圖表、使用進度指示器、突出結論
+### Meeting Presentations
+- Focus: Data visualization, decision processes, action plans
+- Recommendations: Integrate charts, use progress indicators, highlight conclusions
 
-### 知識分享文件
-- 重點：系統化整理、關聯性展示、深度解析
-- 建議：使用分組框線、引用對話框、多層次標題
+### Knowledge Sharing Documents
+- Focus: Systematic organization, relationship display, in-depth analysis
+- Recommendations: Use grouped frames, quote dialog boxes, multi-level headings
 
-### 流程圖說明
-- 重點：邏輯清晰、步驟明確、互動體驗
-- 建議：動態揭露、漸進式展示、手動控制選項
+### Flowchart Explanations
+- Focus: Clear logic, explicit steps, interactive experience
+- Recommendations: Progressive disclosure, step-by-step display, manual control options
 
-## 錯誤處理與降級策略
+## Error Handling & Fallback Strategies
 
-### 瀏覽器兼容性降級
+### Browser Compatibility Fallbacks
 ```css
-/* backdrop-filter 降級處理 */
+/* backdrop-filter fallback handling */
 .glass-effect {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
 }
 
-/* 不支援 backdrop-filter 的瀏覽器 */
+/* Browsers that don't support backdrop-filter */
 @supports not (backdrop-filter: blur(10px)) {
   .glass-effect {
     background: rgba(255, 255, 255, 0.95);
@@ -188,40 +199,41 @@ h1, h2, h3 {
 }
 ```
 
-### JavaScript 錯誤處理
+### JavaScript Error Handling
 ```javascript
-// 動畫庫載入失敗處理
+// Animation library load failure handling
 if (typeof anime === 'undefined') {
-  console.warn('Anime.js 載入失敗，使用 CSS 動畫降級');
-  // 實作 CSS 動畫降級方案
+  console.warn('Anime.js failed to load, using CSS animation fallback');
+  // Implement CSS animation fallback solution
 }
 
-// 圖表庫載入失敗處理
+// Chart library load failure handling
 if (typeof Chart === 'undefined') {
-  console.warn('Chart.js 載入失敗，使用靜態圖表');
-  // 實作靜態圖表降級方案
+  console.warn('Chart.js failed to load, using static charts');
+  // Implement static chart fallback solution
 }
 ```
 
-## 輸出確認清單
+## Output Confirmation Checklist
 
-### 生成前確認
-- [ ] 已確認 JSON 資料結構正確
-- [ ] 已了解使用情境和目標受眾
-- [ ] 已確認技術需求和瀏覽器支援
+### Pre-generation Confirmation
+- [ ] JSON data structure confirmed correct
+- [ ] Usage scenario and target audience understood
+- [ ] Technical requirements and browser support confirmed
 
-### 生成後檢查
-- [ ] 檔案可正常開啟
-- [ ] 所有動畫效果正常
-- [ ] 響應式佈局正確
-- [ ] 無 JavaScript 錯誤
-- [ ] 無 CSS 樣式衝突
-- [ ] 內容完整且正確
+### Post-generation Verification
+- [ ] File opens normally
+- [ ] All animation effects work properly
+- [ ] Responsive layout is correct
+- [ ] No JavaScript errors
+- [ ] No CSS style conflicts
+- [ ] Content is complete and accurate
 
 ---
 
-> **版本資訊**
-> - 建立日期：2024-07-03
-> - 基於：graphics-record-slides-v03.md
-> - 適用於：Gemini CLI
-> - 維護者：@CXPhoenix
+> **Version Information**
+> - Created: 2024-07-03
+> - Based on: graphics-record-slides-v03.md
+> - Applicable to: Gemini CLI
+> - Maintainer: @CXPhoenix
+> - Language Rules: English instructions, Traditional Chinese (Taiwan) output mandatory
