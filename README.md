@@ -73,8 +73,10 @@
 
 ### 🖥️ 投影片生成
 
+*   [**圖像紀錄風格投影片 (v3, 資料驅動)**](slides_prompts/graphics-record-slides-v03.md)
+    *   *用途*：基於結構化 JSON 資料，生成高度可控、資料驅動的互動式手繪風格 SPA 投影片，徹底解決 CoT 標題問題，並最佳化動畫生成流程。
 *   [**圖像紀錄風格投影片 (v2, 互動版)**](slides_prompts/graphics-record-slides-v02.md)
-    *   *用途*：生成具有互動功能、手繪風格的單頁應用程式 (SPA) HTML 投影片，整合 `anime.js` 與 `Chart.js`。
+    *   *用途*：生成具有互動功能、手繪風格的單頁應用程式 (SPA) HTML 投影片，整合 `anime.js` 與 `Chart.js`。(建議使用 v3 獲得更佳體驗)
 *   [**圖像紀錄風格投影片 (v1)**](slides_prompts/graphics-record-slides-v01.md)
     *   *用途*：生成靜態、手繪風格的 HTML 投影片。
 *   [**ISIP 主題風格投影片 (v1)**](slides_prompts/isip-theme-slides-v1.md)
