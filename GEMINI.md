@@ -44,5 +44,6 @@ The repository is organized into categories based on the target application. Eac
 
 When asked to generate a git commit message, I will only generate a message for files the user has already staged.
 - The message will include a commit emoji and will be plain text, without line numbers.
+- The generated commit message will be written to a `COMMIT.tmp` file.
 - I will not stage any files myself. If no files are staged, I will ask the user which files to add.
 - I will not perform any automated commits.
